@@ -1,0 +1,27 @@
+{
+  "name": "js-graphsync",
+  "version": "1.0.0",
+  "description": "GraphSync Implementation",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chafey/js-graphsync.git"
+  },
+  "keywords": [
+    "IPFS",
+    "IPLD",
+    "GraphSync"
+  ],
+  "author": "Chris Hafey <chafey@gmail.com>",
+  "license": "(Apache-2.0 AND MIT)",
+  "bugs": {
+    "url": "https://github.com/chafey/js-graphsync/issues"
+  },
+  "homepage": "https://github.com/chafey/js-graphsync#readme",
+  "devDependencies": {
+    "mocha": "^8.1.1"
+  }
+}
