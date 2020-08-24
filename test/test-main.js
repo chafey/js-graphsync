@@ -3,7 +3,8 @@ const assert = require('assert')
 
 describe('GraphSync Library', () => {
     it('exports', () => {
-        assert(graphSync)
-        assert(graphSync.init)
+        assert.ok(graphSync)
+        assert.ok(graphSync.init)
+        assert.ok(graphSync.new)
     })
 })

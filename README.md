@@ -5,6 +5,7 @@ JavaScript Implementation of GraphSync
 
 * [Requirements Document](https://docs.google.com/document/d/1cPXBWnpgDI3f8L5cmEAcBL_xyJ7cfbBLNWZPN9VJUJU/edit?usp=sharing)
 * [go-graphsync](https://github.com/ipfs/go-graphsync)
+* [GraphSync Specifications](https://github.com/ipld/specs/blob/master/block-layer/graphsync/graphsync.md)
 
 # High Level Development Strategy
 
