@@ -1,6 +1,10 @@
 # js-graphsync
 JavaScript Implementation of GraphSync
 
+# Running Unit Tests
+
+> npm run test
+
 # Links
 
 * [Requirements Document](https://docs.google.com/document/d/1cPXBWnpgDI3f8L5cmEAcBL_xyJ7cfbBLNWZPN9VJUJU/edit?usp=sharing)

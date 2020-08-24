@@ -17,8 +17,8 @@ const createContext = () => {
 describe('Requester', () => {
     it('request succeeds', async () => {
         const mockNetwork = createMockNetwork()
-        const memoryBlockStore = createMemoryBlockStore()
-        const exchange = await graphSync.new(mockNetwork, memoryBlockStore.get, memoryBlockStore.put)
+        const blockStore = createMemoryBlockStore()
+        const exchange = await graphSync.new(mockNetwork, blockStore.get, blockStore.put)
         assert.ok(exchange, 'failed to create graphsync exchange')
         const context = createContext()
         const root = await helloWorldBlock.cid()
@@ -26,8 +26,8 @@ describe('Requester', () => {
 
         const progress = await exchange.request(context, root, selector)
 
-        assert.ok(progress, 'failed to create requestr')
+        assert.ok(progress, 'failed to create requester')
         assert.doesNotReject(progress.complete(), 'progress.complete() returned rejected promise')
-        //assert.equal(Object.keys(memoryBlockStore.blocks).length, 1)
+        //assert.equal(Object.keys(blockStore.blocks).length, 1)
     })
 })
