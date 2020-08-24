@@ -13,3 +13,10 @@ FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-14
 #     && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
 
+
+# install go-ipfs (based on https://docs.ipfs.io/how-to/command-line-quick-start/#install-ipfs)
+RUN wget https://github.com/ipfs/go-ipfs/releases/download/v0.6.0/go-ipfs_v0.6.0_linux-amd64.tar.gz \
+    && tar -xvzf go-ipfs_v0.6.0_linux-amd64.tar.gz \
+    && cd go-ipfs \
+    && bash install.sh 
+

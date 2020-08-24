@@ -1,3 +1,6 @@
+# Local IPFS repository
+.ipfs
+
 # Logs
 logs
 *.log

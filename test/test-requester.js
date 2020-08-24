@@ -22,6 +22,7 @@ describe('Requester', () => {
         assert.ok(exchange, 'failed to create graphsync exchange')
         const context = createContext()
         const root = await helloWorldBlock.cid()
+        console.log(root)
         const selector = { fullGraph: true }
 
         const progress = await exchange.request(context, root, selector)
