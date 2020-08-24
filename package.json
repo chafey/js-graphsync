@@ -23,5 +23,8 @@
   "homepage": "https://github.com/chafey/js-graphsync#readme",
   "devDependencies": {
     "mocha": "^8.1.1"
+  },
+  "dependencies": {
+    "@ipld/block": "^6.0.3"
   }
 }
