@@ -2,6 +2,7 @@ const graphSync = require('../src')
 const assert = require('assert')
 const Block = require('@ipld/block/defaults')
 const createMemoryBlockStore = require('./create-memory-block-store')
+const selectors = require('../src/selectors')
 
 const helloWorldBlock = Block.encoder({ hello: 'world' }, 'dag-cbor')
 
@@ -22,10 +23,7 @@ describe('Requester', () => {
         assert.ok(exchange, 'failed to create graphsync exchange')
         const context = createContext()
         const root = await helloWorldBlock.cid()
-        console.log(root)
-        const selector = { fullGraph: true }
-
-        const progress = await exchange.request(context, root, selector)
+        const progress = await exchange.request(context, root, selectors.exploreAll)
 
         assert.ok(progress, 'failed to create requester')
         assert.doesNotReject(progress.complete(), 'progress.complete() returned rejected promise')

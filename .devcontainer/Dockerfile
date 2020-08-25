@@ -18,5 +18,9 @@ FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-14
 RUN wget https://github.com/ipfs/go-ipfs/releases/download/v0.6.0/go-ipfs_v0.6.0_linux-amd64.tar.gz \
     && tar -xvzf go-ipfs_v0.6.0_linux-amd64.tar.gz \
     && cd go-ipfs \
-    && bash install.sh 
+    && bash install.sh
 
+# install google protobuf compiler
+RUN wget https://github.com/protocolbuffers/protobuf/releases/download/v3.13.0/protoc-3.13.0-linux-x86_64.zip \
+    && unzip -d /usr/local protoc-3.13.0-linux-x86_64.zip \
+    && chmod +x /usr/local/bin/protoc

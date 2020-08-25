@@ -25,6 +25,8 @@
     "mocha": "^8.1.1"
   },
   "dependencies": {
-    "@ipld/block": "^6.0.3"
+    "@ipld/block": "^6.0.3",
+    "google-protobuf": "^3.13.0",
+    "ipld-dag-cbor": "^0.17.0"
   }
 }
