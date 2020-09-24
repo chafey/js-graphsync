@@ -1,0 +1,16 @@
+{
+  "name": "requester",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cids": "^1.0.0",
+    "libp2p-secio": "^0.13.1",
+    "multiaddr": "^8.0.0"
+  }
+}

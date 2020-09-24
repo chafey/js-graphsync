@@ -27,6 +27,10 @@
   "dependencies": {
     "@ipld/block": "^6.0.3",
     "google-protobuf": "^3.13.0",
-    "ipld-dag-cbor": "^0.17.0"
+    "ipld-dag-cbor": "^0.17.0",
+    "libp2p": "^0.29.0",
+    "libp2p-mplex": "^0.10.0",
+    "libp2p-noise": "^2.0.1",
+    "libp2p-tcp": "^0.15.1"
   }
 }

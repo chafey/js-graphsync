@@ -18,7 +18,7 @@ const request = async (context, root, selector) => {
     message.setCompleterequestlist(true)
     message.addRequests(requestMessage)
     const bytes = message.serializeBinary();
-    //console.log(bytes.length)
+    console.log(bytes.length)
 
     // TODO: create handler for messages sent by responder
     // TODO: send request message to responder over network
@@ -36,5 +36,6 @@ const newGraphSync = async (network, loader, storer) => {
 
 module.exports = {
     init,
-    new: newGraphSync
+    new: newGraphSync,
+    
 }

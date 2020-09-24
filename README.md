@@ -30,3 +30,15 @@ JavaScript Implementation of GraphSync
 * Add hook to responder to support DOS mitigation
 * Add hook to requester to validate and buffer received blocks
  
+# go-ipfs graphsync notes
+
+* Appears to respond to graphsync requests on swarm endpoints
+    * /ip4/127.0.0.1/tcp/4001 works at least
+    * UDP does not seem to work
+* Swarm endpoints appear to be configured as follows
+    * Encryption:
+        * TLS - highest priority / default encryption
+        * NOISE - preferred over TLS but not always available so lower priority 
+    * Multiplex
+        * YAMUX - highest priorty - used for communicating with go-ipfs nodes only
+        * MPLEX - lower priority - used for communicating with all non go-ipfs apps
