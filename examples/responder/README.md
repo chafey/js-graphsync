@@ -1,3 +1,5 @@
+# js-graphsync Responder Example
+
 This is an example of a graphsync responder written in JavaScript.  
 
 Current Status:
@@ -10,7 +12,16 @@ ToDo:
 * Traverse child blocks from root block and send them 
 * Add support for filtering child blocks via selector
 
-Running:
+## Building
+
+```bash
+$ npm install
 ```
-> node .
+
+## Running
+
+```bash
+$ node .
 ```
+
+You can now make graphsync requests using the js-graphsync requester or the go-ipfs graphsync-get application
