@@ -6,7 +6,10 @@ const { NOISE } = require('libp2p-noise')
 const SECIO = require('libp2p-secio')
 const MPLEX = require('libp2p-mplex')
 const pipe = require('it-pipe')
+const lp = require('it-length-prefixed')
 const messages = require('../../src/message/pb/message_pb');
+const dagCBOR = require('ipld-dag-cbor')
+const CID = require('cids')
 
 main = async () => {
 
@@ -30,17 +33,23 @@ main = async () => {
     })
 
     // Handle incoming connections for the protocol
-    await node.handle('/ipfs/graphsync/1.0.0', ({ stream }) => {
+    await node.handle('/ipfs/graphsync/1.0.0', async ({ stream }) => {
         console.log("received graphsync message")
-        pipe(
+
+        await pipe(
             stream, 
+            lp.decode(),
             async function (source) {
                 for await (const data of source) {
-                    console.log('received message of length:', data.length)
-                    // deserialize protobuf message
-                    const message = messages.Message.deserializeBinary(data)
-                    // print out message
-                    console.log(message)
+                    const message = messages.Message.deserializeBinary(data.slice())
+                    //console.log(message.toObject())
+                    // process each request
+                    message.getRequestsList().forEach(request => {
+                        const root = new CID(request.getRoot())
+                        console.log('root=', root)
+                        const selector = dagCBOR.util.deserialize(request.getSelector())
+                        console.log('selector=', selector)
+                    })
                 }
             }
         )
