@@ -5,7 +5,7 @@ Current Status:
 * Dumps out the CID and Selector for incoming graphsync requests
 
 ToDo:
-* Send hard coded blocks to the requester
+* Send hard coded blocks to the requester (in progress)
 * Lookup root in block store and send it instead of hard coded block
 * Traverse child blocks from root block and send them 
 * Add support for filtering child blocks via selector

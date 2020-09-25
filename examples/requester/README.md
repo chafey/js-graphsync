@@ -5,8 +5,7 @@ Current Status:
 * Sends request with hard coded CID and selector
 
 ToDo:
-* Verify compatibility with go-ipfs 0.7
-* Handle blocks sent from responder
+* Handle messages sent from responder (in progress)
 * Allow user to pass in mutliaddr and cid and pass to requester
 
 
