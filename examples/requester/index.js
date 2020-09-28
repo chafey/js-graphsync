@@ -98,8 +98,8 @@ main = async () => {
     await node.start()
 
     // Dial the responder node
-    const responderMultiAddr = '/ip4/127.0.0.1/tcp/4001/p2p/QmYHHiqxheZ8KxFtChi7YS8Mr5J8YL12SQYhaeApkkr2mD' // go-ipfs
-    //const responderMultiAddr = '/ip4/127.0.0.1/tcp/10333/p2p/QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm' // js responder
+    //const responderMultiAddr = '/ip4/127.0.0.1/tcp/4001/p2p/QmYHHiqxheZ8KxFtChi7YS8Mr5J8YL12SQYhaeApkkr2mD' // go-ipfs
+    const responderMultiAddr = '/ip4/127.0.0.1/tcp/10333/p2p/QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm' // js responder
     console.log('Dialing to peer:', responderMultiAddr)
     const { stream } = await node.dialProtocol(responderMultiAddr, '/ipfs/graphsync/1.0.0')
 

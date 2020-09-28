@@ -13,6 +13,8 @@ const CID = require('cids')
 const Block = require('@ipld/block/defaults')
 const multicodec = require('multicodec')
 const uint8ArrayConcat = require('uint8arrays/concat')
+const pushable = require('it-pushable')
+
 
 const getPrefix = (cid) => {
     const codec = multicodec.getCodeVarint(cid.codec)
@@ -49,10 +51,18 @@ main = async () => {
     await node.handle('/ipfs/graphsync/1.0.0', async ({ stream }) => {
         console.log("received graphsync message")
 
+        const pushSource = pushable()
+        pipe(
+            pushSource,
+            lp.encode(),
+            stream.sink
+        )
+
         await pipe(
-            stream, 
+            stream.source, 
             lp.decode(),
             async function (source) {
+                const responses = []
                 for await (const data of source) {
                     const message = messages.Message.deserializeBinary(data.slice())
                     //console.log(message.toObject())
@@ -72,27 +82,11 @@ main = async () => {
                         message.setCompleterequestlist(false)
                         message.addResponses(responseMessage)
                     
-                        /*
-                        // TODO: return a hard coded "hello world" block for now
-                        const block = Block.encoder({ hello: 'world' }, 'dag-cbor')
-                        const cid = await block.cid()
-                        const prefix = getPrefix(cid) // TODO: getPrefix() fails right now, need to debug
-                        console.log('prefix=', prefix)
-                        const blockMessage = new messages.Message.Block()
-                        blockMessage.setPrefix(prefix)
-                        blockMessage.setData(block.encode())
-                        message.addData(blockMessage)
-                        */
-
                         // TODO: the client/requester never receives this message for some reason and I am not
                         // sure why yet
                         const bytes = message.serializeBinary();
                         console.log('sending response message of length ', bytes.length)
-                        await pipe(
-                            [bytes],
-                            lp.encode(),
-                            stream
-                        )
+                        pushSource.push(bytes)
                     })
                 }
             }
