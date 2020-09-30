@@ -3,12 +3,12 @@ const dagCBOR = require('ipld-dag-cbor')
 const lp = require('it-length-prefixed')
 const { pipe } = require('it-pipe')
 
-const create = async (node, listener) => {
+const create = async (node, peer) => {
     let nextRequestId = 0
     
-    console.log('listener=', listener)
+    //console.log('peer =', peer)
 
-    const { stream } = await node.dialProtocol(listener, '/ipfs/graphsync/1.0.0')
+    const { stream } = await node.dialProtocol(peer, '/ipfs/graphsync/1.0.0')
 
     console.log('Dialer dialed to listener on protocol: /ipfs/graphsync/1.0.0')
 
@@ -27,12 +27,28 @@ const create = async (node, listener) => {
                     }
                 ]
             })
-            console.log('sending message of length', bytes.length)
+            console.log('sending request message of length', bytes.length)
 
             pipe([bytes],
                 lp.encode(),
                 stream)
         },
+        sendResponse: (requestId, blocks) => {
+            const bytes = graphsyncMessage.Message.encode({
+                completeRequestList: true,
+                responses: [
+                    {
+                        id:requestId,
+                        status: 20
+                    }
+                ]
+            })
+            console.log('sending response message of length', bytes.length)
+
+            pipe([bytes],
+                lp.encode(),
+                stream)
+        }
     }
 }
 

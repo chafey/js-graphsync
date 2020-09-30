@@ -1,6 +1,6 @@
 const prefixFromBytes = require('./prefix-from-bytes')
 
-const responseProcessor = (message, requests, blockStore) => {
+const responseProcessor = (message, stream, connection, requests, blockStore) => {
     message.responses.forEach((response, index) => {
         console.log('response #',index)
         console.log(' id =', response.id)

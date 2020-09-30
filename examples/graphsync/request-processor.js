@@ -1,8 +1,10 @@
 const CID = require('cids')
 const dagCBOR = require('ipld-dag-cbor')
+const exchangeManager = require('./exchange-manager')
+const multiaddr = require('multiaddr')
 
-const requestProcessor = (message) => {
-    message.requests.forEach((request, index) => {
+const requestProcessor = async (message, stream, connection) => {
+    message.requests.forEach(async (request, index) => {
         console.log('request #', index)
         console.log(' id =', request.id)
         const root = new CID(request.root)
@@ -11,23 +13,9 @@ const requestProcessor = (message) => {
         console.log(' selector =', selector)
         console.log(' priority =', request.getPriority())
     
-    
-
-        /*
-        const bytes = messages.Message.encode({
-            completeRequestList: true,
-            responses: [
-                {
-                    id: request.id,
-                    status: 20,// request completed, full content
-                }
-            ]
-        })
-    
-        console.log('sending response message of length ', bytes.length)
-        sink.push(bytes)
-        */
-    
+        const exchange = await exchangeManager.getForPeer(connection.remotePeer)
+        const blocks = []
+        exchange.sendResponse(request.id, blocks)
     })
 }
 
