@@ -37,8 +37,8 @@ async function run() {
   })
 
   // Dial to the remote peer (the "listener")
-  const listenerMa = multiaddr('/ip4/127.0.0.1/tcp/4001/p2p/QmSn6pxaiWdParNqMH2uomzEvD6pPRRJrzxHqQsbEihDNd') // go-ipfs
-  //const listenerMa = multiaddr(`/ip4/127.0.0.1/tcp/10333/p2p/${idListener.toB58String()}`)
+  //const listenerMa = multiaddr('/ip4/127.0.0.1/tcp/4001/p2p/QmSn6pxaiWdParNqMH2uomzEvD6pPRRJrzxHqQsbEihDNd') // go-ipfs
+  const listenerMa = multiaddr(`/ip4/127.0.0.1/tcp/10333/p2p/${idListener.toB58String()}`)
 
   console.log('Dialer dialed to listener on protocol: /ipfs/graphsync/1.0.0')
 

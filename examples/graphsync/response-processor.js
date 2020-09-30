@@ -1,7 +1,7 @@
 const prefixFromBytes = require('./prefix-from-bytes')
 const exchangeManager = require('./exchange-manager')
 const Block = require('@ipld/block/defaults')
-const dagPB = require('@ipld/dag-pb')
+//const dagPB = require('../../node_modules/@ipld/dag-pb')
 
 //Block.multiformats.add(dagPB)
 
@@ -23,14 +23,15 @@ const responseProcessor = async (message, stream, connection) => {
 
     message.data.forEach((data, index) => {
         console.log('block #',index)
+        console.log(' prefix=', data.prefix)
         const prefix = prefixFromBytes(data.prefix)
         console.log(' prefix =', prefix)
-        console.log(' data =', data.data)
+        console.log(' data.length =', data.data.length)
 
         // TODO: create block from data and decode
-        const block = Block.decoder(data.data, prefix.codec)
-        console.log(block)
-        console.log('decoded=',block.decode())
+        //const block = Block.decoder(data.data, prefix.codec)
+        //console.log(block)
+        //console.log('decoded=',block.decode())
 
         // TODO: pass decoded block to request validator in the list of requests
         // TODO: if block is valid, store in block store

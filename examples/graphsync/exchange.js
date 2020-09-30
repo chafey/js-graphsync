@@ -52,7 +52,8 @@ const create = async (node, peer) => {
                         id:requestId,
                         status: 20
                     }
-                ]
+                ],
+                data: blocks
             })
             console.log('sending response message of length', bytes.length)
 
