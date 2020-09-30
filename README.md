@@ -42,3 +42,4 @@ JavaScript Implementation of GraphSync
     * Multiplex
         * YAMUX - highest priorty - used for communicating with go-ipfs nodes only
         * MPLEX - lower priority - used for communicating with all non go-ipfs apps
+
