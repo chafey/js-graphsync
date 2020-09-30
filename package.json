@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@ipld/block": "^6.0.4",
-    "@ipld/dag-pb": "github:ipld/js-dag-pb",
     "@nodeutils/defaults-deep": "^1.1.0",
     "ipld-dag-cbor": "^0.17.0",
     "it-pushable": "^1.4.0",

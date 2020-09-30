@@ -1,9 +1,10 @@
 const prefixFromBytes = require('./prefix-from-bytes')
 const exchangeManager = require('./exchange-manager')
-const Block = require('@ipld/block/defaults')
-//const dagPB = require('../../node_modules/@ipld/dag-pb')
 
-//Block.multiformats.add(dagPB)
+// TODO: Block to be dependency injected into library, codecs will be library consumers responsibility
+const Block = require('@ipld/block/defaults')
+const dagPB = require('../../extern/js-dag-pb/dist/cjs/index.js')
+Block.multiformats.add(dagPB)
 
 const responseProcessor = async (message, stream, connection) => {
     const requests = []

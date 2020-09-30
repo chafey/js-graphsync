@@ -1,7 +1,18 @@
 # js-graphsync
 JavaScript Implementation of GraphSync
 
+NOTE - see the directory examples/graphsync for the spike implementations of requester and responder
+NOTE - you must git clone a local copy of ipld/js-dag-pb in the extern folder to build the example:
+
+```sh
+$ cd extern
+$ ./gitclone.sh
+```
+
+
 # Running Unit Tests
+
+NOTE - ignore, not updated
 
 > npm run test
 
@@ -15,8 +26,8 @@ JavaScript Implementation of GraphSync
 
 - [X] Spike js-graphsync requester and verify against go-graphsync responder
 - [X] Spike js-graphsync responder and verify against both js-graphsync requester and go-graphsync requester
-- [ ] API design for all intended features  
-- [ ] Refactor js-graphsync requester to new API design
+- [ ] API design for all intended features (in progress)  
+- [ ] Refactor js-graphsync requester to new API design (in progress)
 - [ ] Add CI to run unit tests 
 - [ ] Add CI to run integration test of js-graphsync requester with go-graphsync responder
 - [ ] Refactor js-graphsync responder to new API design
