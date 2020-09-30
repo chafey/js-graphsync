@@ -25,6 +25,7 @@ const peerDisconnected = async(peer, node) => {
 
 const getForPeer = async (peer) => {
     const peerId = peer.toB58String()
+    //console.log('getForPeer', peerId)
     const entry = peerToExchangeMap[peerId]
     if(!entry) {
         console.warn('unable to find peer ', peer, ' in peerToExchangeMap!')
@@ -36,8 +37,22 @@ const getForPeer = async (peer) => {
     }
 }
 
+const addExchange = async(exchange, peer, node) => {
+    const peerId = peer.toB58String()
+    const entry = peerToExchangeMap[peerId]
+    if(!entry) {
+        peerToExchangeMap[peerId] = {
+            node,
+            exchange
+        }
+    } else {
+        entry.exchange = exchange
+    }
+}
+
 module.exports = {
     peerConnected,
     peerDisconnected,
-    getForPeer
+    getForPeer,
+    addExchange
 }

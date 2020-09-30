@@ -6,6 +6,8 @@ const { pipe } = require('it-pipe')
 const create = async (node, peer) => {
     let nextRequestId = 0
     
+    const requests = []
+
     //console.log('peer =', peer)
 
     const { stream } = await node.dialProtocol(peer, '/ipfs/graphsync/1.0.0')
@@ -14,11 +16,18 @@ const create = async (node, peer) => {
 
     return {
         sendRequest: (root, selector) => {
+            // generate a unique requestId for this request
+            const requestId = nextRequestId++
+
+            // store the request parameters so we can find them later when receiving responses
+            requests[requestId] = {root, selector}
+            console.log('requests=',requests)
+            // encode the request as a graphsync message 
             const bytes = graphsyncMessage.Message.encode({
                 completeRequestList: true,
                 requests: [
                     {
-                        id: nextRequestId++,
+                        id: requestId,
                         root: root.bytes,
                         selector: dagCBOR.util.serialize(selector),
                         priority: 0,
@@ -29,11 +38,13 @@ const create = async (node, peer) => {
             })
             console.log('sending request message of length', bytes.length)
 
+            // send the message bytes to the requester
             pipe([bytes],
                 lp.encode(),
                 stream)
         },
         sendResponse: (requestId, blocks) => {
+            // encode the response as a graphsync message
             const bytes = graphsyncMessage.Message.encode({
                 completeRequestList: true,
                 responses: [
@@ -45,9 +56,14 @@ const create = async (node, peer) => {
             })
             console.log('sending response message of length', bytes.length)
 
+            // send the message to the requester
             pipe([bytes],
                 lp.encode(),
                 stream)
+        },
+        getRequest: (requestId) => {
+            //console.log('requests=', requests)
+            return requests[requestId]
         }
     }
 }

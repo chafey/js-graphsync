@@ -1,11 +1,20 @@
 const prefixFromBytes = require('./prefix-from-bytes')
+const exchangeManager = require('./exchange-manager')
 
-const responseProcessor = (message, stream, connection, requests, blockStore) => {
+const responseProcessor = async (message, stream, connection) => {
+    const requests = []
+    const exchange = await exchangeManager.getForPeer(connection.remotePeer)
     message.responses.forEach((response, index) => {
         console.log('response #',index)
         console.log(' id =', response.id)
         console.log(' status =', response.status)
-        // TODO: get list of requests associated with the response id
+        const request = exchange.getRequest(response.id)
+        if(!request) {
+            console.warn('could not find request referenced by response!')
+            // TODO: figure out what to do here...
+        } else {
+            requests.push(request)
+        }
     })
 
     message.data.forEach((data, index) => {

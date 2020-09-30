@@ -8,6 +8,7 @@ const CID = require('cids')
 const initializeNode = require('./initialize-node')
 const selectors = require('./selectors')
 const Exchange = require('./exchange')
+const exchangeManager = require('./exchange-manager')
 
 async function run() {
   const [idDialer, idListener] = await Promise.all([
@@ -42,6 +43,7 @@ async function run() {
   console.log('Dialer dialed to listener on protocol: /ipfs/graphsync/1.0.0')
 
   const exchange = await Exchange.create(nodeDialer, listenerMa)
+  exchangeManager.addExchange(exchange, idListener)
 
   const root = new CID('Qme98eG7WKx6VEqf3Jza7rp9CRXgSHD7o8SL5KoDggH2VX')
   const selector = selectors.all
