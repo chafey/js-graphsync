@@ -58,7 +58,7 @@ const create = async (node, peer) => {
             console.log('sending response message of length', bytes.length)
 
             // send the message to the requester
-            await pipe([bytes],
+            pipe([bytes],
                 lp.encode(),
                 stream)
         },

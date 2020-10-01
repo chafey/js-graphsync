@@ -11,6 +11,12 @@ const Exchange = require('./exchange')
 const exchangeManager = require('./exchange-manager')
 
 async function run() {
+
+  if(process.argv.length < 4) {
+    console.log("missing  arguments - expecting graphsync responder multiaddr and root CID")
+    process.exit(-1)
+  }
+
   const [idDialer, idListener] = await Promise.all([
     PeerId.createFromJSON(require('./peer-id-dialer')),
     PeerId.createFromJSON(require('./peer-id-listener'))
@@ -37,15 +43,14 @@ async function run() {
   })
 
   // Dial to the remote peer (the "listener")
-  //const listenerMa = multiaddr('/ip4/127.0.0.1/tcp/4001/p2p/QmSn6pxaiWdParNqMH2uomzEvD6pPRRJrzxHqQsbEihDNd') // go-ipfs
-  const listenerMa = multiaddr(`/ip4/127.0.0.1/tcp/10333/p2p/${idListener.toB58String()}`)
+  const listenerMa = multiaddr(process.argv[2])
 
   console.log('Dialer dialed to listener on protocol: /ipfs/graphsync/1.0.0')
 
   const exchange = await Exchange.create(nodeDialer, listenerMa)
   exchangeManager.addExchange(exchange, idListener)
 
-  const root = new CID('Qme98eG7WKx6VEqf3Jza7rp9CRXgSHD7o8SL5KoDggH2VX')
+  const root = new CID(process.argv[3])
   const selector = selectors.all
   exchange.sendRequest(root, selector)
 }
