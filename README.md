@@ -56,14 +56,14 @@ cd test/go-ipfs
 
 ```sh
 cd examples/graphsync
-node requester.js
+./get-from-go-ipfs.sh
 ```
 
 ## Running js-graphsync requester against js-graphsync responder
 
 ```sh
 cd examples/graphsync
-node requester.js
+./get-from-js-graphsync-responder.sh
 ```
 
 # Links
