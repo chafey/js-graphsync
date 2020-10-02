@@ -17,9 +17,8 @@ async function run() {
     process.exit(-1)
   }
 
-  const [idDialer, idListener] = await Promise.all([
-    PeerId.createFromJSON(require('./peer-id-dialer')),
-    PeerId.createFromJSON(require('./peer-id-listener'))
+  const [idDialer] = await Promise.all([
+    PeerId.createFromJSON(require('./peer-id-dialer'))
   ])
 
   // Create a new libp2p node on localhost with a randomly chosen port
@@ -47,9 +46,11 @@ async function run() {
 
   console.log('Dialer dialed to listener on protocol: /ipfs/graphsync/1.0.0')
 
+  // create a graphsync exchange with the responder 
   const exchange = await Exchange.create(nodeDialer, listenerMa)
-  exchangeManager.addExchange(exchange, idListener)
+  exchangeManager.addExchange(exchange, listenerMa.getPeerId(), nodeDialer)
 
+  // issue the graphsync request to the responder
   const root = new CID(process.argv[3])
   const selector = selectors.all
   exchange.sendRequest(root, selector)

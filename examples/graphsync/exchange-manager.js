@@ -37,8 +37,8 @@ const getForPeer = async (peer) => {
     }
 }
 
-const addExchange = async(exchange, peer, node) => {
-    const peerId = peer.toB58String()
+const addExchange = async(exchange, peerId, node) => {
+    //const peerId = peer.toB58String()
     const entry = peerToExchangeMap[peerId]
     if(!entry) {
         peerToExchangeMap[peerId] = {
