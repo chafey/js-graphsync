@@ -1,6 +1,6 @@
 const { pipe } = require('it-pipe')
 const lp = require('it-length-prefixed')
-const graphsyncMessage = require('./graphsync-message')
+const graphsyncMessage = require('../../src/message/graphsync-message')
 const requestProcessor = require('./request-processor')
 const responseProcessor = require('./response-processor')
 

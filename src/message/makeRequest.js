@@ -1,21 +1,22 @@
-const messages = require('./pb/message_pb');
 const dagCBOR = require('ipld-dag-cbor')
-
+const graphsyncMessage = require('./graphsync-message')
 
 const makeRequest = async(root, selector) => {
-    const requestMessage = new messages.Message.Request()
-    requestMessage.setId(100)
-    requestMessage.setRoot(root.bytes)
-    requestMessage.setSelector(dagCBOR.util.serialize(selector))
-    requestMessage.setPriority(1)
-    requestMessage.setCancel(false)
-    requestMessage.setUpdate(false)
-    const message = new messages.Message()
-    message.setCompleterequestlist(true)
-    message.addRequests(requestMessage)
-    const bytes = message.serializeBinary();
-    //console.log(bytes.length)
+    const bytes = graphsyncMessage.Message.encode({
+        completeRequestList: true,
+        requests: [
+            {
+                id: 0,
+                root: root.bytes,
+                selector: dagCBOR.util.serialize(selector),
+                priority: 1,
+                cancel: false,
+                update: false,
+            }
+        ]
+    })
     return bytes
 }
+
 
 module.exports = makeRequest

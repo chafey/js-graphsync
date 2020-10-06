@@ -16,7 +16,7 @@ const MPLEX = require('libp2p-mplex')
  * @param {*} multiaddr 
  */
 
-const createIpfsTCPNode = async (listen = []) => {
+const createIpfsTCPNode = async (libp2p, listen = []) => {
     return Libp2p.create({
         addresses: {
           listen

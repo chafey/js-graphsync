@@ -1,23 +1,12 @@
-const messages = require('./message/pb/message_pb');
-const dagCBOR = require('ipld-dag-cbor')
+const makeRequest = require('./message/makeRequest')
 
 const init = () => {
     console.log("Initializing...")
 }
 
 const request = async (context, root, selector) => {
-    // TODO: create request message
-    const requestMessage = new messages.Message.Request()
-    requestMessage.setId(1)
-    requestMessage.setRoot(root.bytes)
-    requestMessage.setSelector(dagCBOR.util.serialize(selector))
-    requestMessage.setPriority(1)
-    requestMessage.setCancel(false)
-    requestMessage.setUpdate(false)
-    const message = new messages.Message()
-    message.setCompleterequestlist(true)
-    message.addRequests(requestMessage)
-    const bytes = message.serializeBinary();
+ 
+    const bytes = makeRequest(root, selector)
     console.log(bytes.length)
 
     // TODO: create handler for messages sent by responder
@@ -28,7 +17,7 @@ const request = async (context, root, selector) => {
     }
 }
 
-const newGraphSync = async (network, loader, storer) => {
+const newGraphSync = async (network, loader, storer, console, block) => {
     return {
         request
     }
@@ -37,5 +26,4 @@ const newGraphSync = async (network, loader, storer) => {
 module.exports = {
     init,
     new: newGraphSync,
-    
 }

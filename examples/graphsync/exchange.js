@@ -1,16 +1,16 @@
-const graphsyncMessage = require('./graphsync-message')
+const graphsyncMessage = require('../../src/message/graphsync-message')
 const dagCBOR = require('ipld-dag-cbor')
 const lp = require('it-length-prefixed')
 const { pipe } = require('it-pipe')
 
-const create = async (node, peer) => {
+const create = async (node, peerId) => {
     let nextRequestId = 0
     
     const requests = []
 
     //console.log('peer =', peer)
 
-    const { stream } = await node.dialProtocol(peer, '/ipfs/graphsync/1.0.0')
+    const { stream } = await node.dialProtocol(peerId, '/ipfs/graphsync/1.0.0')
 
     console.log('Dialer dialed to listener on protocol: /ipfs/graphsync/1.0.0')
 

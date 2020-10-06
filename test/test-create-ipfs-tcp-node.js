@@ -1,6 +1,7 @@
 const createIpfsTCPNode = require('../src/network/create-ipfs-tcp-node')
 const assert = require('assert')
 
+/*
 describe('CreateIPFSTcpNode', () => {
     it('create with default parameter succeeds', async () => {
         const listenerNode = await createIpfsTCPNode(['/ip4/127.0.0.1/tcp/7000'])
@@ -18,6 +19,7 @@ describe('CreateIPFSTcpNode', () => {
         listenerNode.stop()
     })
 })
+*/
 /*
 describe('CreateIPFSTcpNode', () => {
     it('connect to go-ipfs', async () => {

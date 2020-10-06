@@ -32,6 +32,8 @@ async function run() {
   // initialize this libp2p node to handle graphsync protocol
   await initializeNode(nodeDialer)
 
+
+
   // Start the libp2p host
   await nodeDialer.start()
 
@@ -43,11 +45,15 @@ async function run() {
 
   // Dial to the remote peer (the "listener")
   const listenerMa = multiaddr(process.argv[2])
+  //console.log(listenerMa)
+  const peerId = PeerId.createFromB58String(listenerMa.getPeerId())
+  //console.log('peerId=',  peerId)
+  nodeDialer.peerStore.addressBook.set(peerId, [listenerMa])
 
   console.log('Dialer dialed to listener on protocol: /ipfs/graphsync/1.0.0')
 
   // create a graphsync exchange with the responder 
-  const exchange = await Exchange.create(nodeDialer, listenerMa)
+  const exchange = await Exchange.create(nodeDialer, peerId)
   exchangeManager.addExchange(exchange, listenerMa.getPeerId(), nodeDialer)
 
   // issue the graphsync request to the responder

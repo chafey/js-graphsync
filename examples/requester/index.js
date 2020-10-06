@@ -1,143 +1,63 @@
+const graphSync = require('../../src')
+const selectors = require('../../src/selectors')
+
+const Block = require('@ipld/block/defaults')
+const PeerId = require('peer-id')
+const multiaddr = require('multiaddr')
+const CID = require('cids')
+
 const Libp2p = require('libp2p')
 const TCP = require('libp2p-tcp')
+const multiaddr = require('multiaddr')
 const { NOISE } = require('libp2p-noise')
-const SECIO = require('libp2p-secio')
 const MPLEX = require('libp2p-mplex')
-const pipe = require('it-pipe')
-const lp = require('it-length-prefixed')
-const messages = require('../../src/message/pb/message_pb');
-const dagCBOR = require('ipld-dag-cbor')
-//const dagPB = require('@ipld/dag-pb')
-//const dagPB = require('ipld-dag-pb')
-const CID = require('cids')
-const Block = require('@ipld/block/defaults')
+const SECIO = require('libp2p-secio')
 
-//Block.multiformats.add(dagPB)
+// this is the block we will retrieve from the graphsync responder, it needs to be stored previously
+const helloWorldBlock = Block.encoder({ hello: 'world' }, 'dag-cbor') // bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae
 
-const prefixFromBytes = (bytes) => {
-    const firstByte = bytes.slice(0, 1)
-    const v = parseInt(bytes.toString('hex'), 16)
-    if (v === 1) {
-      // version is a CID Uint8Array
-      const cid = bytes
-      return {
-          version: v,
-          codec: multicodec.getCodec(cid.slice(1)),
-          multihash: multicodec.rmPrefix(cid.slice(1)),
-          multibaseName: 'base32'
-      } 
-    } else {
-      // version is a raw multihash Uint8Array, so v0
-      return {
-        version: 0,
-        codec: 'dag-pb',
-        multihash: bytes,
-        multibaseName: 'base58btc'
-        } 
-    }   
+const createMemoryBlockStore = () => {
+    const blocks = {}
+
+    return {
+        blocks: blocks,
+        put: async block => {
+            blocks[block.cid().then(cid => cid.toString())] = block
+        },
+        get: async cid => {
+            return blocks[cid.toString()]
+        }
+    }
 }
 
-main = async () => {
-    const node = await Libp2p.create({
+const main = () => {
+    // Create a libp2p node compatible with go-ipfs
+    const node = Libp2p.create({
         modules: {
             transport: [TCP],
-            connEncryption: [SECIO, NOISE],
+            connEncryption: [NOISE, SECIO],
             streamMuxer: [MPLEX]
         }
     })
 
-    // create listener for response/block messages sent from responder
-    await node.handle('/ipfs/graphsync/1.0.0', async ({ stream }) => {
-        console.log("received graphsync message")
+    // register the responder with the node
+    const responderMultiAddr = multiaddr('/ip4/127.0.0.1/tcp/10333/p2p/QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm')
+    const responderPeerId = responderMultiAddr.getPeerId() //'QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm'
+    node.peerStore.addressBook.set(PeerId.createFromB58String(responderPeerId), [responderMultiAddr])
 
-        await pipe(
-            stream, 
-            lp.decode(),
-            async function (source) {
-                for await (const data of source) {
-                    const message = messages.Message.deserializeBinary(data.slice())
-                    //console.log(message.toObject())
-                    // process each request
-                    console.log('---requests---')
-                    message.getRequestsList().forEach(request => {
-                        const root = new CID(request.getRoot())
-                        console.log('root=', root)
-                        const selector = dagCBOR.util.deserialize(request.getSelector())
-                        console.log('selector=', selector)
-                    })
-                    // process each response
-                    console.log('---responses---')
-                    message.getResponsesList().forEach(response => {
-                        console.log('id=', response.getId())  
-                        console.log('status=', response.getStatus())  
-                        const extensionsMap = response.getExtensionsMap()
-                        for (let key of extensionsMap.keys()) {
-                            console.log(key, '=', extensionsMap.get(key).length, 'bytes')
-                        }
-                    })
-                    // process each block
-                    console.log('---data---')
-                    message.getDataList().forEach(data => {
-                        const prefix = prefixFromBytes(data.getPrefix())
-                        console.log('prefix=', prefix)
-                        console.log('data=', data.getData().length, 'bytes')
-                        /*
-                        // TODO: this fails with Error: Do not have multiformat entry for "dag-pb" and
-                        // i am not sure how to fix this yet
-                        const block = Block.decoder(data.getData(), prefix.codec)
-                        console.log(block)
-                        console.log('decoded=',block.decode())
-                        */
-                    })
-                }
-            }
-        )
-    })
+    // Create a GraphExchange
+    const blockStore = createMemoryBlockStore()
+    const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
 
-    // Start the dialer libp2p node
-    await node.start()
+    // Issue a request for the helloWorldBlock and wait for it to complete
+    const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
+    const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
+    await request.complete()
 
-    // Dial the responder node
-    //const responderMultiAddr = '/ip4/127.0.0.1/tcp/4001/p2p/QmYHHiqxheZ8KxFtChi7YS8Mr5J8YL12SQYhaeApkkr2mD' // go-ipfs
-    const responderMultiAddr = '/ip4/127.0.0.1/tcp/10333/p2p/QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm' // js responder
-    console.log('Dialing to peer:', responderMultiAddr)
-    const { stream } = await node.dialProtocol(responderMultiAddr, '/ipfs/graphsync/1.0.0')
+    // request is complete, get the block from the blockstore and print it out - it shoudl be the hello world json block
+    const block = await blockSttore.get(root)
+    console.log(block)
 
-    console.log('dialed responder on protocol: /ipfs/graphsync/1.0.0')
-
-    const requestMessage = new messages.Message.Request()
-    requestMessage.setId(0)
-    requestMessage.setRoot(new CID('Qme98eG7WKx6VEqf3Jza7rp9CRXgSHD7o8SL5KoDggH2VX').bytes)
-    requestMessage.setSelector(dagCBOR.util.serialize({
-        "a": {
-            ">": {
-                ".": {}
-            }
-        }
-    }))
-    requestMessage.setPriority(0)
-    requestMessage.setCancel(false)
-    requestMessage.setUpdate(false)
-    const message = new messages.Message()
-    message.setCompleterequestlist(true)
-    message.addRequests(requestMessage)
-    const bytes = message.serializeBinary();
-
-    await pipe(
-        [bytes],
-        lp.encode(),
-        stream
-    )
-
-    return 0
 }
 
-main().then((result) => {
-    console.log('success: result = ', result)
-    
-    //process.exit(result)
-}).catch((error) => {
-    console.log('error: ', error)
-    process.exit(-1)
-})
-
+main()
