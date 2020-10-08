@@ -6,6 +6,9 @@ const selectors = require('../src/selectors')
 const CID = require('cids')
 const lp = require('it-length-prefixed')
 const graphsyncMessage = require('../src/message/graphsync-message')
+const pushable = require('it-pushable')
+const PeerId = require('peer-id')
+const { pipe } = require('it-pipe')
 
 const helloWorldBlock = Block.encoder({ hello: 'world' }, 'dag-cbor')
 
@@ -99,7 +102,7 @@ describe('GraphExchange', () => {
         assert.strictEqual(dials.length, 1)
     })
 
-    it('request sends one graphsync message', async () => {
+    it('request sends one GraphSync message', async () => {
         // setup our mock libp2p node
         const outboundData = []
         const mockNode = {
@@ -128,4 +131,78 @@ describe('GraphExchange', () => {
         const messageBytes = (await messageIterator.next()).value
         const message = graphsyncMessage.Message.decode(messageBytes.slice())
     })
+
+    it('handles inbound GraphSync stream', async () => {
+        // setup our mock libp2p node
+        let registeredHandler = undefined
+        const mockNode = {
+            handle: async(protocol, handler) => {
+                registeredHandler = handler
+            },
+            dialProtocol: async(peerId, protocols, options) => {
+                return {
+                    stream : async(source) => {
+                    }
+                }
+            }
+        }
+        const blockStore = createMemoryBlockStore()
+        
+        const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
+        assert.ok(exchange, 'failed to create GraphExchange')
+
+        const connection = {
+            remotePeer: PeerId.createFromCID('QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm')
+        }
+        const stream = pushable()
+        const protocol = '/ipfs/graphsync/1.0.0'
+        registeredHandler({connection, stream, protocol})
+    })
+
+    it('receives graphsync message', async () => {
+        // setup our mock libp2p node
+        let registeredHandler = undefined
+        const mockNode = {
+            handle: async(protocol, handler) => {
+                registeredHandler = handler
+            },
+            dialProtocol: async(peerId, protocols, options) => {
+                return {
+                    stream : async(source) => {
+                    }
+                }
+            }
+        }
+        const blockStore = createMemoryBlockStore()
+        
+        const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
+        assert.ok(exchange, 'failed to create GraphExchange')
+
+        const connection = {
+            remotePeer: PeerId.createFromCID('QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm')
+        }
+        const stream = pushable()
+        const protocol = '/ipfs/graphsync/1.0.0'
+        registeredHandler({connection, stream, protocol})
+        
+        const bytes = graphsyncMessage.Message.encode({
+            completeRequestList: true,
+            responses: [
+                {
+                    id:0,
+                    status: 20
+                }
+            ]
+        })
+        // send the message to the requester
+        await pipe([bytes],
+            lp.encode(),
+            async (source) => {
+                for await (const data of source) {
+                    stream.push(data)
+                }
+            }
+        )
+    })
+
 })

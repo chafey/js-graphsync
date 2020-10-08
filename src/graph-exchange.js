@@ -6,14 +6,31 @@ const { pipe } = require('it-pipe')
 
 const newGraphExchange = async (node, blockStoreGet, blockStorePut, logger, block) => {
     const self = this
+    const peers = {}
 
     const newStreamHandler = async({connection, stream, protocol}) => {
-        //console.log("newStreamHandler for", protocol)
-    }
+        const peerId = connection.remotePeer.toB58String()
+        //console.log('new graphsync stream from ', peerId)
+        const peer = await getOrCreatePeer(peerId)
+        peer.inboundStreams.push(stream)
+        //console.log('peer=', peer)
+
+        pipe(
+            stream,
+            lp.decode(),
+            async function (source) {
+                for await (const data of source) {
+                    //console.log('received graphsync message of length ',data.length)
+                    const message = await graphsyncMessage.Message.decode(data.slice())
+                    //console.log(message)
+                    //await requestProcessor(message, stream, connection)
+                    // await responseProcessor(message, stream, connection)
+                }
+            }
+        )
+        }
 
     node.handle('/ipfs/graphsync/1.0.0', newStreamHandler)
-
-    const peers = {}
 
     const getOrCreatePeer = async (peerId) => {
         const peer = peers[peerId]
@@ -25,7 +42,8 @@ const newGraphExchange = async (node, blockStoreGet, blockStorePut, logger, bloc
 
         const newPeer = {
             nextRequestId : 0,
-            outgoingStream: stream
+            outgoingStream: stream,
+            inboundStreams: []
         }
 
         peers[peerId] = newPeer
