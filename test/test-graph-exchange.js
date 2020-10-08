@@ -2,25 +2,61 @@ const graphSync = require('../src')
 const assert = require('assert')
 const Block = require('@ipld/block/defaults')
 const createMemoryBlockStore = require('../helpers/memory-block-store')
-const createMockLibp2pNode = require('./mocks/libp2p-node')
 const selectors = require('../src/selectors')
 const CID = require('cids')
+const lp = require('it-length-prefixed')
+const graphsyncMessage = require('../src/message/graphsync-message')
 
 const helloWorldBlock = Block.encoder({ hello: 'world' }, 'dag-cbor')
 
 describe('GraphExchange', () => {
-    it('creation succeeds', async () => {
+    it('creation returns object', async () => {
         // setup our mock libp2p node
-        const mockNode = createMockLibp2pNode()
+        const mockNode = {
+            handle: async(protocol, handler) => {
+            }
+        }
         const blockStore = createMemoryBlockStore()
         
         const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
-        assert.ok(exchange, 'failed to create graphsync exchange')
+        assert.ok(exchange, 'failed to create GraphExchange')
     })
 
-    it('request completes', async () => {
+    it('creation registers graphsync protocol handler', async () => {
         // setup our mock libp2p node
-        const mockNode = createMockLibp2pNode()
+        let handlers = []
+        const mockNode = {
+            handle: async(protocol, handler) => {
+                handlers.push({protocol, handler})
+            }
+        }
+        
+        const blockStore = createMemoryBlockStore()
+        
+        const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
+        assert.ok(exchange, 'failed to create GraphExchange')
+        assert.strictEqual(handlers.length, 1)
+        assert.strictEqual(handlers[0].protocol, '/ipfs/graphsync/1.0.0')
+        assert.ok(handlers[0].handler)
+
+    })
+
+    it('request creates connection to peer', async () => {
+        // setup our mock libp2p node
+        const dials = []
+        const mockNode = {
+            handle: async() => {},
+            dialProtocol: async(peerId, protocols, options) => {
+                dials.push({
+                    peerId,
+                    protocols,
+                    options
+                })
+                return {
+                    stream : async(source) => {}
+                }
+            }
+        }
         const blockStore = createMemoryBlockStore()
         
         const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
@@ -30,13 +66,25 @@ describe('GraphExchange', () => {
         const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
         const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
         assert.ok(request, 'failed to create request')
-        await request.complete()
-        assert.equal(Object.keys(blockStore.blocks).length, 1)
+        assert.strictEqual(dials.length, 1)
     })
 
-    it('request to unknown peer fails', async () => {
+    it('request reuses existing connection to peer', async () => {
         // setup our mock libp2p node
-        const mockNode = createMockLibp2pNode()
+        const dials = []
+        const mockNode = {
+            handle: async() => {},
+            dialProtocol: async(peerId, protocols, options) => {
+                dials.push({
+                    peerId,
+                    protocols,
+                    options
+                })
+                return {
+                    stream : async(source) => {}
+                }
+            }
+        }
         const blockStore = createMemoryBlockStore()
         
         const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
@@ -46,8 +94,38 @@ describe('GraphExchange', () => {
         const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
         const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
         assert.ok(request, 'failed to create request')
-        await request.complete()
+        assert.strictEqual(dials.length, 1)
+        const request2 = await exchange.request(responderPeerId, root, selectors.exploreAll)
+        assert.strictEqual(dials.length, 1)
     })
 
+    it('request sends one graphsync message', async () => {
+        // setup our mock libp2p node
+        const outboundData = []
+        const mockNode = {
+            handle: async() => {},
+            dialProtocol: async(peerId, protocols, options) => {
+                return {
+                    stream : async(source) => {
+                        for await (const data of source) {
+                            outboundData.push(data)
+                        }
+                    }
+                }
+            }
+        }
+        const blockStore = createMemoryBlockStore()
+        
+        const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
+        assert.ok(exchange, 'failed to create GraphExchange')
 
+        const responderPeerId = 'QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm'
+        const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
+        const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
+        assert.ok(request, 'failed to create request')
+        assert.strictEqual(outboundData.length, 1)
+        const messageIterator = await lp.decode()(outboundData)
+        const messageBytes = (await messageIterator.next()).value
+        const message = graphsyncMessage.Message.decode(messageBytes.slice())
+    })
 })

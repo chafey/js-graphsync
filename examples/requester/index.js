@@ -37,6 +37,8 @@ const main = () => {
     const blockStore = createMemoryBlockStore()
     const exchange = await graphSync.new(mockNode, blockStore.get, blockStore.put, console, Block)
 
+    mockNode.start()
+
     // Issue a request for the helloWorldBlock and wait for it to complete
     const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
     const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
