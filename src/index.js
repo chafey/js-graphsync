@@ -1,4 +1,5 @@
 const makeRequest = require('./message/makeRequest')
+const newGraphExchange = require('./graph-exchange')
 
 const init = () => {
     console.log("Initializing...")
@@ -17,13 +18,7 @@ const request = async (context, root, selector) => {
     }
 }
 
-const newGraphSync = async (network, loader, storer, console, block) => {
-    return {
-        request
-    }
-}
-
 module.exports = {
     init,
-    new: newGraphSync,
+    new: newGraphExchange,
 }

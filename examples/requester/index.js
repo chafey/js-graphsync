@@ -13,22 +13,10 @@ const { NOISE } = require('libp2p-noise')
 const MPLEX = require('libp2p-mplex')
 const SECIO = require('libp2p-secio')
 
+const createMemoryBlockStore = require('../../helpers/memory-block-store')
+
 // this is the block we will retrieve from the graphsync responder, it needs to be stored previously
 const helloWorldBlock = Block.encoder({ hello: 'world' }, 'dag-cbor') // bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae
-
-const createMemoryBlockStore = () => {
-    const blocks = {}
-
-    return {
-        blocks: blocks,
-        put: async block => {
-            blocks[block.cid().then(cid => cid.toString())] = block
-        },
-        get: async cid => {
-            return blocks[cid.toString()]
-        }
-    }
-}
 
 const main = () => {
     // Create a libp2p node compatible with go-ipfs

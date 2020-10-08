@@ -1,4 +1,4 @@
-const createIpfsTCPNode = require('../src/network/create-ipfs-tcp-node')
+const createIpfsTCPNode = require('../../helpers/create-ipfs-tcp-node')
 const assert = require('assert')
 
 /*

@@ -1,20 +1,7 @@
 const Block = require('@ipld/block/defaults')
 const assert = require('assert')
 
-const createMemoryBlockStore = () => {
-    const blocks = {}
-
-    return {
-        blocks: blocks,
-        put: async block => {
-            blocks[block.cid().then(cid => cid.toString())] = block
-        },
-        get: async cid => {
-            return blocks[cid.toString()]
-        }
-    }
-}
-
+const createMemoryBlockStore = require('../../helpers/memory-block-store')
 
 describe('Memory Block Store', () => {
     it('Can Get Put Block', async () => {
