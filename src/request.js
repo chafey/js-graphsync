@@ -1,4 +1,4 @@
-const createRequest = async (graphExchange, responderPeerId, rootCID, selector) => {
+const createRequest = async (responderPeerId, rootCID, selector) => {
     return {
         complete: async () => {}
     }
