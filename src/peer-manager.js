@@ -1,3 +1,6 @@
+// PeerManager:
+//  * manages
+
 const createPeerManager = (node) => {
 
     const peerIdMap = {}
@@ -6,22 +9,21 @@ const createPeerManager = (node) => {
         getOrCreatePeer : async(peerId) => {
             const peer = peerIdMap[peerId]
             if(peer) {
+                await peer.dialPromise
                 return peer
             }
 
-            // TODO: Prevent race condition here
-
-            // immediately dial the peer so we can send messages back to it
-            const { stream } = await node.dialProtocol(peerId, '/ipfs/graphsync/1.0.0')
-
             const newPeer = {
                 nextRequestId : 0,
-                outgoingStream: stream,
+                dialPromise : node.dialProtocol(peerId, '/ipfs/graphsync/1.0.0'),
+                outgoingStream: undefined,
                 inboundStreams: [],
                 requests: []
             }
     
             peerIdMap[peerId] = newPeer
+
+            newPeer.outgoingStream = (await newPeer.dialPromise).stream
 
             return newPeer
         }

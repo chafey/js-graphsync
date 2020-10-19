@@ -53,7 +53,7 @@ describe('PeerManager', () => {
         assert.strictEqual(newPeer, existingPeer)
     })
 
-    it('getOrCreatePeer while alreadying dialing peer returns the same stream', async () => {
+    it('getOrCreatePeer while already dialing peer returns the same stream', async () => {
         const dialedPeerIds = []
         const mockNode = {
             dialProtocol: async(peerId, protocols) => {
@@ -63,11 +63,12 @@ describe('PeerManager', () => {
         }
         const peerManager = createPeerManager(mockNode)         
         const newPeer = peerManager.getOrCreatePeer('QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm')
-        const existingPeer = await peerManager.getOrCreatePeer('QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm')
+        const existingPeer = peerManager.getOrCreatePeer('QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm')
         await newPeer
+        await existingPeer
         assert.strictEqual(dialedPeerIds.length, 1)
         assert.strictEqual(dialedPeerIds[0], 'QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm')
-        assert.strictEqual(newPeer, existingPeer)
+        assert.strictEqual(await newPeer, await existingPeer)
     })
 
     it('getOrCreatePeer rejects promise if dialProtocol throws', async () => {
