@@ -10,7 +10,7 @@
             },
             "problemMatcher": [],
             "label": "npm: test",
-            "detail": "mocha test/test-*.js"
+            "detail": "mocha test/**/test-*.js"
         }
     ]
 }

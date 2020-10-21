@@ -70,3 +70,13 @@ TODO
 * Someone requested block de-duplication accross multiple requests - who was this and why is it needed?  Doing so makes block-deduplication more difficult (see issues related to Block Deduplication for a single request above)  Feedback from @mikeal - block deduplication is something that should happen but is not guaranteed 
 * Would be nice to use strategy pattern to handle graph traversal and graph validation logic (rather than bind to selector?)  This would also be a good way
   to handle the extensions metadata that go-graphsync uses
+* Need to figure out how to handle libp2p errors when trying to send a message
+  * timeout
+  * connection closed
+* Need to figure out if a libp2p stream can have multiple writers?
+
+
+Questions
+---------
+* Should I create a new stream for each graphsync message I send or add logic to re-use an existing stream?
+* If reusing existing streams, are there any issues with concurrent 

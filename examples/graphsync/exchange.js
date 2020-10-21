@@ -24,7 +24,6 @@ const create = async (node, peerId) => {
             console.log('requests=',requests)
             // encode the request as a graphsync message 
             const bytes = graphsyncMessage.Message.encode({
-                completeRequestList: true,
                 requests: [
                     {
                         id: requestId,
@@ -46,7 +45,6 @@ const create = async (node, peerId) => {
         sendResponse: (requestId, blocks) => {
             // encode the response as a graphsync message
             const bytes = graphsyncMessage.Message.encode({
-                completeRequestList: true,
                 responses: [
                     {
                         id:requestId,
