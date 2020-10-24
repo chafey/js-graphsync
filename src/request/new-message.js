@@ -7,7 +7,6 @@ const createNewMessage = (state) => {
                 id: state.id,
                 root: state.rootCID.bytes,
                 selector: dagCBOR.util.serialize(state.selector),
-                priority: 0,
                 cancel: false,
                 update: false,
             }

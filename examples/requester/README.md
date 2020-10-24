@@ -7,9 +7,8 @@ Current Status:
 * Sends request with hard coded CID and selector
 
 ToDo:
-* Handle messages sent from responder (in progress)
 * Allow user to pass in mutliaddr and cid and pass to requester
-
+* Handle messages sent from responder (in progress - need to store received blocks in blockstore)
 
 ## Building
 

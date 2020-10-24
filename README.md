@@ -26,7 +26,7 @@ run build.sh periodically to keep up to date with the latest changes in js-dag-p
 ## Running go-ipfs as graphsync responder
 
 ```sh
-cd test/go-ipfs
+cd integration/go-ipfs
 ./init.sh
 ipfs daemon
 ```
@@ -41,14 +41,14 @@ node responder.js
 ## Running go-ipfs graphsync-get test app against go-ipfs
 
 ```sh
-cd test/go-ipfs
+cd integration/go-ipfs
 ./get-from-go-ipfs.sh
 ```
 
 ## Running go-ipfs graphsync-get test app against js-graphsync responder
 
 ```sh
-cd test/go-ipfs
+cd integration/go-ipfs
 ./get-from-js-graphsync-responder.sh
 ```
 
@@ -72,13 +72,15 @@ cd examples/graphsync
 * [Design Notes](DESIGN.md)
 * [go-graphsync](https://github.com/ipfs/go-graphsync)
 * [GraphSync Specifications](https://github.com/ipld/specs/blob/master/block-layer/graphsync/graphsync.md)
+* [Selector test cases](https://github.com/ChainSafe/ipld-traversal-vectors)
+* [IPLD Selector Specifications](https://github.com/ipld/specs/blob/master/selectors/selectors.md)
 
 # High Level Development Plan
 
 - [X] Spike js-graphsync requester and verify against go-graphsync responder
 - [X] Spike js-graphsync responder and verify against both js-graphsync requester and go-ipfs graphsync-get
 - [ ] API design for all intended features (in progress)  
-- [ ] Refactor js-graphsync requester to new API design (in progress)
+- [X] Refactor js-graphsync requester to new API design
 - [ ] Add CI to run unit tests 
 - [ ] Add CI to run integration test of js-graphsync requester with go-graphsync responder
 - [ ] Refactor js-graphsync responder to new API design

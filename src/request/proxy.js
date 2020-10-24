@@ -23,6 +23,7 @@ const createRequestProxy = (requestState) => {
     const status = () => {
         return {
             blocksReceived: requestState.blocksReceived,
+            bytesReceived: requestState.bytesReceived,
             status: requestState.status
         }
     }

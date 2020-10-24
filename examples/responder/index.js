@@ -7,13 +7,29 @@ const SECIO = require('libp2p-secio')
 const MPLEX = require('libp2p-mplex')
 const pipe = require('it-pipe')
 const lp = require('it-length-prefixed')
-const messages = require('../../src/message/pb/message_pb');
+//const messages = require('../../src/message/pb/message_pb');
 const dagCBOR = require('ipld-dag-cbor')
 const CID = require('cids')
 const Block = require('@ipld/block/defaults')
 const multicodec = require('multicodec')
 const uint8ArrayConcat = require('uint8arrays/concat')
 const pushable = require('it-pushable')
+
+const protons = require('protons')
+const fs = require('fs')
+const path = require('path')
+const graphsyncMessage = protons(fs.readFileSync(path.resolve(__dirname, '../../src/message/message.proto')))
+
+const dumpExtensions = (extensions) => {
+    console.log("extensions:")
+    for(const extension in extensions) {
+        if(extension == 'graphsync/response-metadata') {
+            console.log('graphsync/response-metadata=', dagCBOR.util.deserialize(extensions[extension]))
+        } else {
+            console.log(extension)
+        }
+    }
+}
 
 
 const getPrefix = (cid) => {
@@ -64,20 +80,22 @@ main = async () => {
             async function (source) {
                 const responses = []
                 for await (const data of source) {
-                    const message = messages.Message.deserializeBinary(data.slice())
-                    //console.log(message.toObject())
+                    const message = graphsyncMessage.Message.decode(data.slice())
+                    //console.log(message)
                     // process each request
-                    message.getRequestsList().forEach(async (request) => {
-                        console.log('id=', request.getId())
-                        const root = new CID(request.getRoot())
+                    message.requests.forEach(async (request) => {
+                        console.log('id=', request.id)
+                        const root = new CID(request.root)
                         console.log('root=', root)
-                        const selector = dagCBOR.util.deserialize(request.getSelector())
-                        console.log('selector=', selector)
-                        console.log('priority=', request.getPriority())
-
-                        const responseMessage = new messages.Message.Response()
+                        const selector = dagCBOR.util.deserialize(request.selector)
+                        console.log('selector=', JSON.stringify(selector))
+                        dumpExtensions(request.extensions)
+                        console.log('priority=', request.priority)
+                        console.log('cancel=', request.cancel)
+                        console.log('update=', request.update)
+                        /*const responseMessage = new messages.Message.Response()
                         responseMessage.setId(request.getId())
-                        responseMessage.setStatus(20 /* request completed, full content*/)
+                        responseMessage.setStatus(20)//request completed, full content
                         const message = new messages.Message()
                         message.setCompleterequestlist(false)
                         message.addResponses(responseMessage)
@@ -87,6 +105,7 @@ main = async () => {
                         const bytes = message.serializeBinary();
                         console.log('sending response message of length ', bytes.length)
                         pushSource.push(bytes)
+                        */
                     })
                 }
             }

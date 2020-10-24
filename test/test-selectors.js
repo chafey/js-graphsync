@@ -4,6 +4,7 @@ const assert = require('assert')
 describe('Selectors', () => {
     it('exports', () => {
         assert.ok(selectors)
-        assert.ok(selectors.exploreAll)
+        assert.ok(selectors.depthLimitedGraph)
+        assert.ok(selectors.fullGraph)
     })
 })

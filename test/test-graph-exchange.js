@@ -68,7 +68,7 @@ describe('GraphExchange', () => {
 
         const responderPeerId = 'QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm'
         const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
-        const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
+        const request = await exchange.request(responderPeerId, root, selectors.depthLimitedGraph)
         assert.ok(request, 'failed to create request')
         assert.strictEqual(dials.length, 1)
     })
@@ -96,10 +96,10 @@ describe('GraphExchange', () => {
 
         const responderPeerId = 'QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm'
         const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
-        const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
+        const request = await exchange.request(responderPeerId, root, selectors.depthLimitedGraph)
         assert.ok(request, 'failed to create request')
         assert.strictEqual(dials.length, 1)
-        const request2 = await exchange.request(responderPeerId, root, selectors.exploreAll)
+        const request2 = await exchange.request(responderPeerId, root, selectors.depthLimitedGraph)
         assert.strictEqual(dials.length, 1)
     })
 
@@ -125,7 +125,7 @@ describe('GraphExchange', () => {
 
         const responderPeerId = 'QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm'
         const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
-        const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
+        const request = await exchange.request(responderPeerId, root, selectors.depthLimitedGraph)
         assert.ok(request, 'failed to create request')
         assert.strictEqual(outboundData.length, 1)
         const messageIterator = await lp.decode()(outboundData)

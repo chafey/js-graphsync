@@ -16,6 +16,7 @@ const createRequestState = (id, peerId, rootCID, selector) => {
         selector,
         status: 0,
         blocksReceived: 0,
+        bytesReceived: 0,
         completed,
         promiseResolve,
         promiseReject

@@ -80,3 +80,8 @@ Questions
 ---------
 * Should I create a new stream for each graphsync message I send or add logic to re-use an existing stream?
 * If reusing existing streams, are there any issues with concurrent 
+
+
+Selectors
+---------
+https://github.com/ChainSafe/ipld-traversal-vectors

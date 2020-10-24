@@ -28,9 +28,11 @@ const main = async () => {
     })
 
     // register the responder with the node
-    const responderMultiAddr = multiaddr('/ip4/127.0.0.1/tcp/4001/p2p/QmSn6pxaiWdParNqMH2uomzEvD6pPRRJrzxHqQsbEihDNd')
-    const responderPeerIdString = responderMultiAddr.getPeerId() //'QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm'
-    const responderPeerId = PeerId.createFromB58String(responderPeerIdString)
+    const responderMultiAddr = multiaddr('/ip4/127.0.0.1/tcp/4001/p2p/QmW7486gy8scYpx6FGxKdVfDmpsEnwWXYac49x7VspFqpp') // go-ipfs
+    //const responderMultiAddr = multiaddr(`/ip4/127.0.0.1/tcp/4001/p2p/${peerId}`)
+    //const responderMultiAddr = multiaddr('/ip4/127.0.0.1/tcp/10333/p2p/QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm') // js-responder
+    const peerIdString = responderMultiAddr.getPeerId() //'QmcrQZ6RJdpYuGvZqD5QEHAv6qX4BrQLJLQPQUrTrzdcgm'
+    const responderPeerId = PeerId.createFromB58String(peerIdString)
     node.peerStore.addressBook.set(responderPeerId, [responderMultiAddr])
 
     // Create a GraphExchange
@@ -40,14 +42,21 @@ const main = async () => {
     node.start()
 
     // Issue a request for the helloWorldBlock and wait for it to complete
-    const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
-    const request = await exchange.request(responderPeerId, root, selectors.exploreAll)
-    console.log('waiting for request to complete')
-    await request.complete()
-    console.log('request completed with status', request.status().status)
+    //const root = new CID('QmS3V8uLR5bzjxBWzC4oXxSV7ryStjCGxTuTiuB91sMR9c') // go1.15.2.linux-amd64.tar.gz
+    //const root = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqwfvae') // helloWorldBlock CID
+    const root = new CID('Qme98eG7WKx6VEqf3Jza7rp9CRXgSHD7o8SL5KoDggH2VX') // helloWorldBlock CID
+    try {
+        const request = await exchange.request(responderPeerId, root, selectors.depthLimitedGraph)
+        console.log('waiting for request to complete')
+        await request.complete()
+        console.log('request completed with status', request.status())
+    } catch(err) {
+        console.log('unexpected error', err)
+    }
     // request is complete, get the block from the blockstore and print it out - it shoudl be the hello world json block
-    //const block = await blockSttore.get(root)
+    //const block = await blockStore.get(root)
     //console.log(block)
+    await node.stop()
 }
 
 main()

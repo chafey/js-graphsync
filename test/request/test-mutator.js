@@ -10,7 +10,7 @@ const rootCID = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqw
 
 const createRequestStateMock = () => {
     const id = 0
-    const selector = selectors.exploreAll
+    const selector = selectors.depthLimitedGraph
     return createRequestState(id, peerId, rootCID, selector)
 }
 

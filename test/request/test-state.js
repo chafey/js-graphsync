@@ -11,7 +11,7 @@ describe('RequestState', () => {
     it('create succeeds', async () => {
         // Arrange
         const id = 0
-        const selector = selectors.exploreAll
+        const selector = selectors.depthLimitedGraph
 
         // Act
         const state = createRequestState(id, peerId, rootCID, selector)
@@ -31,7 +31,7 @@ describe('RequestState', () => {
     it('promiseResolve resolves', async () => {
         // Arrange
         const id = 0
-        const selector = selectors.exploreAll
+        const selector = selectors.depthLimitedGraph
 
         // Act
         const state = createRequestState(id, peerId, rootCID, selector)
@@ -44,7 +44,7 @@ describe('RequestState', () => {
     it('promiseReject rejects', async () => {
         // Arrange
         const id = 0
-        const selector = selectors.exploreAll
+        const selector = selectors.depthLimitedGraph
 
         // Act
         const state = createRequestState(id, peerId, rootCID, selector)
