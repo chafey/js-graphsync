@@ -29,7 +29,7 @@ const createResponseHandler = (Block, blockStore) => {
             return
         }
 
-        debug(response, data)
+        //debug(response, data)
 
         // process each block
         for(const blockData of data) {
@@ -38,6 +38,8 @@ const createResponseHandler = (Block, blockStore) => {
 
             // create a block from the raw data
             const block = await Block.decoder(blockData.data, codec)
+
+            // TODO: validate block
 
             // store block in block store
             await blockStore.put(block)

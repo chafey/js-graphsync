@@ -26,7 +26,7 @@ const createRequestStateMock = () => {
 }
 
 describe('responseHandler', () => {
-    it('response for in progress request is processed', async () => {
+    it('status is updated with non terminal status for in progress request', async () => {
         // Arrange
         const blockStore = createMemoryBlockStore()
         const responseHandler = createResponseHandler(Block, blockStore)
@@ -37,6 +37,50 @@ describe('responseHandler', () => {
             id: 0,
             status: 10
         }
+
+        // Act
+        await responseHandler(proxy, mutator, mockResponse, [])
+
+        // Assert
+        assert.strictEqual(state.status, 10)
+    })
+
+    it('status is not changed for completed request', async () => {
+        // Arrange
+        const blockStore = createMemoryBlockStore()
+        const responseHandler = createResponseHandler(Block, blockStore)
+        const state = createRequestStateMock()
+        const proxy = createRequestProxy(state)
+        const mutator = createRequestMutator(state)
+        const mockResponse = {
+            id: 0,
+            status: 20
+        }
+        await responseHandler(proxy, mutator, mockResponse, [])
+
+        const mockResponse2 = {
+            id: 0,
+            status: 10
+        }
+
+        // Act
+        await responseHandler(proxy, mutator, mockResponse2, [])
+
+        // Assert
+        assert.strictEqual(state.status, 20)
+    })
+
+    it('response with valid block stored in block store for in progress request', async () => {
+        // Arrange
+        const blockStore = createMemoryBlockStore()
+        const responseHandler = createResponseHandler(Block, blockStore)
+        const state = createRequestStateMock()
+        const proxy = createRequestProxy(state)
+        const mutator = createRequestMutator(state)
+        const mockResponse = {
+            id: 0,
+            status: 20
+        }
         const mockBlockData = {
             prefix: prefixBytesFromCIDBytes(helloWorldBlockCID.bytes),
             data: helloWorldBlock.encode()
@@ -46,9 +90,32 @@ describe('responseHandler', () => {
         await responseHandler(proxy, mutator, mockResponse, [mockBlockData])
 
         // Assert
-        assert.strictEqual(state.status, 10)
-        assert.strictEqual(state.blocksReceived, 1)
-        assert.strictEqual(state.bytesReceived, 13)
-        assert.ok(blockStore.get(helloWorldBlockCID))
+        assert.ok(await blockStore.get(helloWorldBlockCID))
+        assert.deepStrictEqual((await blockStore.get(helloWorldBlockCID)).encode(), helloWorldBlock.encode())
     })
+
+    it('response with valid block updates request status for in progress request', async () => {
+        // Arrange
+        const blockStore = createMemoryBlockStore()
+        const responseHandler = createResponseHandler(Block, blockStore)
+        const state = createRequestStateMock()
+        const proxy = createRequestProxy(state)
+        const mutator = createRequestMutator(state)
+        const mockResponse = {
+            id: 0,
+            status: 20
+        }
+        const mockBlockData = {
+            prefix: prefixBytesFromCIDBytes(helloWorldBlockCID.bytes),
+            data: helloWorldBlock.encode()
+        }
+
+        // Act
+        await responseHandler(proxy, mutator, mockResponse, [mockBlockData])
+
+        // Assert
+        assert.strictEqual(proxy.status().blocksReceived, 1)
+        assert.strictEqual(proxy.status().bytesReceived, 13)
+    })
+
 })

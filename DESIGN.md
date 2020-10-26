@@ -76,5 +76,19 @@ TODO
 * Need to figure out if a libp2p stream can have multiple writers?
 
 
-Selectors
----------
+Questions for @mikeal
+---------------------
+
+* What is difference between js-cid and multiformats/cid?  js-cid has a .prefix() which I used
+* how do i register dag-pb with @ipld/block?
+* not sure if async iterator interface makes sense for request object
+* How to handle server generated errors (currently just completing with status code)
+  - terminal status code - complete request
+  - response metadata indicates block not present - continue and track
+* How to handle client detected errors
+  - missing codec - continue and track
+  - invalid message - complete request with client error
+  - block decode failure - complete request with client error
+  - validation error 
+     - selector - complete request with client error
+     - response metadata - complete request with client error
