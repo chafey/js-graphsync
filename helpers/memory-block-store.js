@@ -4,10 +4,12 @@ const createMemoryBlockStore = () => {
     return {
         blocks: blocks,
         put: async block => {
-            blocks[block.cid().then(cid => cid.toString())] = block
+            const cidAsString = (await block.cid()).toString()
+            blocks[cidAsString] = block
         },
         get: async cid => {
-            return blocks[cid.toString()]
+            const cidAsString = cid.toString()
+            return blocks[cidAsString]
         }
     }
 }

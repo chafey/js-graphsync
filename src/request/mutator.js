@@ -1,52 +1,36 @@
-const dagCBOR = require('ipld-dag-cbor')
-
-
-const isTerminalStatus = (status) => {
-    return status >= 20
-}
-
-const dumpExtensions = (extensions) => {
-    console.log("extensions:")
-    for(const extension in extensions) {
-        if(extension == 'graphsync/response-metadata') {
-            console.log('graphsync/response-metadata=', dagCBOR.util.deserialize(extensions[extension]))
-        } else {
-            console.log(extension)
-        }
-    }
-}
+const isTerminalStatus = require('../util/is-terminal-status')
 
 const createRequestMutator = (requestState) => {
     
-    const handleResponse = (response, data) => {
-        //dumpExtensions(response.extensions)
+    const setStatus = (state) => {
 
-        //console.log(`received response with status ${response.status} and ${data.length} blocks`)
-
-        // ignore any responses after we have hit a terminal status
+        // Do not allow status changes after request has completed
         if(isTerminalStatus(requestState.status)) {
-            // TODO: Log warning?
-            //console.warn('ignoring response for request that has already completed')
-            return
+            throw new Error('cannot change status after request is completed')
         }
-        
-        // update status
-        requestState.status = response.status
 
-        // TODO: Process each block (using response metadata)
-        requestState.blocksReceived += data.length
-        requestState.bytesReceived += data.reduce((total, block) => {
-            return total + block.data.length
-        },0)
+        // update status
+        requestState.status = state
 
         // resolve our promise for terminal statuses (success and error)
         if(isTerminalStatus(requestState.status)) {
             requestState.promiseResolve()
         }
     }
-    
+
+    const updateBlockStats = (blockData) => {
+        // Do not allow changes after request is completed
+        if(isTerminalStatus(requestState.status)) {
+            throw new Error('cannot update block stats after request is completed')
+        }
+        
+        requestState.blocksReceived += 1
+        requestState.bytesReceived += blockData.data.length
+    }
+
     return {
-        handleResponse,
+        setStatus,
+        updateBlockStats
     }
 } 
 

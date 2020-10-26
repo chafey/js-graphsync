@@ -39,7 +39,7 @@ const main = async () => {
 
     // Create a GraphExchange
     const blockStore = createMemoryBlockStore()
-    const exchange = await graphSync.new(node, blockStore.get, blockStore.put, console, Block)
+    const exchange = await graphSync.new(node, blockStore, console, Block)
 
     node.start()
 
@@ -52,10 +52,12 @@ const main = async () => {
     } catch(err) {
         console.log('unexpected error', err)
     }
-    // TODO: request is complete, get the block from the blockstore and print it out
-    //const block = await blockStore.get(root)
-    //console.log(block)
+    // request is complete, get the block from the blockstore and print it out
+    const block = await blockStore.get(rootCID)
+    console.log(block.decode())
     
+    // TODO: traverse the graph printing out each block
+
     // Stop the node so we can exit the program
     await node.stop()
 }

@@ -15,37 +15,27 @@ const createRequestStateMock = () => {
 }
 
 describe('RequestMutator', () => {
-    it('terminal response resolves completed promise', async () => {
-  
+
+    it('terminal response for in progress request', async () => {
         // Arrange
         const state = createRequestStateMock()
         const requestMutator = createRequestMutator(state)
 
-        const mockResponse = {
-            status: 20 // Request Completed, full content
-        }
-        const mockData = []
-
         // Act
-        requestMutator.handleResponse(mockResponse, mockData)
+        requestMutator.setStatus(20)
     
         // Assert
+        assert.strictEqual(state.status, 20)
         await state.completed // should complete
     })
 
-    it('non terminal response does not resolve completed', async () => {
-  
+    it('non terminal response for in progress request', async () => {
         // Arrange
         const state = createRequestStateMock()
         const requestMutator = createRequestMutator(state)
 
-        const mockResponse = {
-            status: 10 // request acknowledged, working on it
-        }
-        const mockData = []
-
         // Act
-        requestMutator.handleResponse(mockResponse, mockData)
+        requestMutator.setStatus(10)
     
         // Assert
         promisePending = true
@@ -53,20 +43,53 @@ describe('RequestMutator', () => {
             promisePending = false
         })
         assert.strictEqual(promisePending, true)
+        assert.strictEqual(state.status, 10)
     })
 
-    it('non terminal response does not change status of completed request', async () => {
+    it('setStatus throws if request is completed', async () => {
         // Arrange
         const state = createRequestStateMock()
         const requestMutator = createRequestMutator(state)
+        requestMutator.setStatus(20)
 
         // Act
-        requestMutator.handleResponse({status: 20}, [])
-        requestMutator.handleResponse({status: 10}, [])
-    
+        assert.throws(() => requestMutator.setStatus(10))
+
         // Assert
         assert.strictEqual(state.status, 20)
     })
 
+    it('updateBlockStatus throws on completed request', async () => {
+        // Arrange
+        const state = createRequestStateMock()
+        const requestMutator = createRequestMutator(state)
+        requestMutator.setStatus(20)
+        const mockBlockData = {
+            data: []
+        }
+
+        // Act
+        assert.throws(() => requestMutator.updateBlockStats(mockBlockData))
+
+        // Assert
+        assert.strictEqual(state.blocksReceived, 0)
+        assert.strictEqual(state.bytesReceived, 0)
+    })
+
+    it('updateBlockStatus throws on inprogress request', async () => {
+        // Arrange
+        const state = createRequestStateMock()
+        const requestMutator = createRequestMutator(state)
+        const mockBlockData = {
+            data: [0,0,0]
+        }
+
+        // Act
+        requestMutator.updateBlockStats(mockBlockData)
+
+        // Assert
+        assert.strictEqual(state.blocksReceived, 1)
+        assert.strictEqual(state.bytesReceived, 3)
+    })
 
 })

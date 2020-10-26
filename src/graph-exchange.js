@@ -1,26 +1,28 @@
 const createRequest = require('./request/create')
 const createHandler = require('./handler')
+const createResponseHandler = require('./response/handler')
 
-const newGraphExchange = async (node, blockStoreGet, blockStorePut, logger, block) => {
+const newGraphExchange = async (node, blockStore, logger, Block) => {
 
     let nextRequestId = 0
 
     const requests = []
 
-    const messageHandler = (peerId, message) => {
+    const responseHandler = createResponseHandler(Block, blockStore)
+
+    const messageHandler = async (peerId, message) => {
         //console.log('peerId=', peerId)
-        message.responses.forEach((response) => {
-            //console.log('response.id=',response.id)
+        for(const response of message.responses) {
             // look up request with this peerId and request Id
-            requests.forEach((request) => {
+            for(const request of requests) {
                 const info = request.proxy.info()
                 //console.log(info)
                 if(info.peerId.toB58String() === peerId && 
                    info.id == response.id) {
-                       request.mutator.handleResponse(response, message.data)
+                    await responseHandler(request.proxy, request.mutator, response, message.data)
                 }
-            })
-        })
+            }
+        }
     }
 
     node.handle('/ipfs/graphsync/1.0.0', createHandler(messageHandler))
