@@ -23,12 +23,20 @@ run build.sh periodically to keep up to date with the latest changes in js-dag-p
 
 # Running Examples
 
-## Running go-ipfs as graphsync responder
+## Initializing go-ipfs
+
+NOTE: This only needs to be done once 
 
 ```sh
 cd integration/go-ipfs
 ./init.sh
-ipfs daemon
+```
+
+## Starting go-ipfs
+
+```sh
+cd integration/go-ipfs
+./start.sh
 ```
 
 ## Running js-graphsync responder
@@ -55,14 +63,14 @@ cd integration/go-ipfs
 ## Running js-graphsync requester against go-ipfs
 
 ```sh
-cd examples/graphsync
+cd examples/requester
 ./get-from-go-ipfs.sh
 ```
 
 ## Running js-graphsync requester against js-graphsync responder
 
 ```sh
-cd examples/graphsync
+cd examples/requester
 ./get-from-js-graphsync-responder.sh
 ```
 

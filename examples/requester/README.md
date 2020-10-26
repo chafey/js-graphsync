@@ -1,14 +1,14 @@
 # js-graphsync Requester Example
 
-This is an example of a graphsync requester written in JavaScript.  
+This is an example of a graphsync requester written in JavaScript using js-graphsync
 
 Current Status:
+* Allow user to pass in mutliaddr and cid and pass to requester
 * Creates libp2p connection that is compatible with go-ipfs graphsync.  Verified to interoperate with go-ipfs 0.7 with graphsync enabled
-* Sends request with hard coded CID and selector
+* Sends request to responder and wait for it to complete
 
 ToDo:
-* Allow user to pass in mutliaddr and cid and pass to requester
-* Handle messages sent from responder (in progress - need to store received blocks in blockstore)
+* Print out data received
 
 ## Building
 
@@ -16,11 +16,18 @@ ToDo:
 $ npm install
 ```
 
-## Running
+## Running against go-ipfs
 
-Start up the js-graphsync responder first and then:
+Start up go-ipfs first and then:
 
 ```bash
-$ node .
+./get-from-go-ipfs.sh
 ```
 
+## Running against js-graphsync responder
+
+Start up go-ipfs first and then:
+
+```bash
+./get-from-js-graphsync-responder.sh
+```
