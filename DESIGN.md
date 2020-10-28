@@ -80,8 +80,16 @@ Questions for @mikeal
 ---------------------
 
 * What is difference between js-cid and multiformats/cid?  js-cid has a .prefix() which I used
+  -> multiformats/cid is "new" - use this instead of js-cid
+  -> 
 * how do i register dag-pb with @ipld/block?
+  -> Use Block api in js-multiformats
+  -> see example use in https://github.com/mikeal/dkv/
+  -> 
+* How to tell user about paused request?
 * not sure if async iterator interface makes sense for request object
+  -> one generator for validated blocks
+  -> one generator for messages?
 * How to handle server generated errors (currently just completing with status code)
   - terminal status code - complete request
   - response metadata indicates block not present - continue and track
@@ -92,3 +100,4 @@ Questions for @mikeal
   - validation error 
      - selector - complete request with client error
      - response metadata - complete request with client error
+* 

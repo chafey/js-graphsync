@@ -1,5 +1,5 @@
 const createRequest = require('./request/create')
-const createHandler = require('./handler')
+const createStreamHandler = require('./stream-handler')
 const createResponseHandler = require('./response/handler')
 
 const newGraphExchange = async (node, blockStore, logger, Block) => {
@@ -25,7 +25,7 @@ const newGraphExchange = async (node, blockStore, logger, Block) => {
         }
     }
 
-    node.handle('/ipfs/graphsync/1.0.0', createHandler(messageHandler))
+    node.handle('/ipfs/graphsync/1.0.0', createStreamHandler(messageHandler))
 
     const request = async (peerId, rootCID, selector) => {
         const requestId = nextRequestId++

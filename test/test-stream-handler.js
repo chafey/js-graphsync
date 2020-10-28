@@ -1,4 +1,4 @@
-const createHandler = require('../src/handler')
+const createStreamHandler = require('../src/stream-handler')
 const graphsyncMessage = require('../src/message/graphsync-message')
 const assert = require('assert')
 const pushable = require('it-pushable')
@@ -41,7 +41,7 @@ describe('handler', () => {
 
         // ARRANGE
         const mockMessageHandler = createMockMessageHandler()
-        const handler = createHandler(mockMessageHandler)
+        const handler = createStreamHandler(mockMessageHandler)
         const mockConnection = createMockConnection()
         const mockStream = pushable()
         await encodeMessageAndSend({}, mockStream)

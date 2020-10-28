@@ -2,7 +2,7 @@ const lp = require('it-length-prefixed')
 const { pipe } = require('it-pipe')
 const graphsyncMessage = require('./message/graphsync-message')
 
-const createHandler = (messageHandler) => {
+const createStreamHandler = (messageHandler) => {
     return ({connection, stream, protocol}) => {
         const peerId = connection.remotePeer.toB58String()
         //console.log('new graphsync stream from ', peerId)
@@ -27,4 +27,4 @@ const createHandler = (messageHandler) => {
     }
 }
 
-module.exports = createHandler
+module.exports = createStreamHandler
