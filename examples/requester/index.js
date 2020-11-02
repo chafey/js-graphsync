@@ -45,19 +45,19 @@ const main = async () => {
 
     // Issue a request and wait for it to complete
     try {
+        console.log('sending graphsync request')
         const request = await exchange.request(responderPeerId, rootCID, selectors.depthLimitedGraph)
-        console.log('waiting for request to complete')
+        console.log('waiting for graphsync request to complete')
         await request.complete()
-        console.log('request completed with status', request.status())
+        console.log('graphsync request completed with status', request.status())
+        // request is complete, get the block from the blockstore and print it out
+        // TODO: traverse the graph printing out each block
+        const block = await blockStore.get(rootCID)
+        console.log(block.decode())
     } catch(err) {
-        console.log('unexpected error', err)
+        console.log('caught error', err)
     }
-    // request is complete, get the block from the blockstore and print it out
-    const block = await blockStore.get(rootCID)
-    console.log(block.decode())
     
-    // TODO: traverse the graph printing out each block
-
     // Stop the node so we can exit the program
     await node.stop()
 }

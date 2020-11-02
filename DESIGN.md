@@ -101,3 +101,59 @@ Questions for @mikeal
      - selector - complete request with client error
      - response metadata - complete request with client error
 * 
+
+Seperable Pieces
+----------------
+
+* message generator
+* response + block data generator (NOTE - block data may not be fore this response!)
+* request status filter (if request is in terminal state)
+* CID generator (based on response metadata)
+* CID generator (based on selector engine)
+* CID generator (based on traversing decoded blocks - won't work for deep graphs)
+* decoded block generator
+* block storer
+* request status handler (update status)
+* debugger
+* request statistics consumer (updates block count, received byte count)
+
+
+Response handling pseudo code
+-----------------------------
+
+
+
+messageGenerator - yields messages for a peer as they are received
+responseGenerator - yeilds responses and blockData for a request
+requestStatusFilter - yields responses and blockData for requests that have not reached terminal status
+responseMetadataCIDGenerator - yields cids based on the response metadata extension
+blockGenerator 
+  - input iterable: cids
+  - output iterable: blocks
+requestCIDGenerator - yields expected cids for a request
+
+
+```javascript
+function processResponse(response, blockData) {
+  makeSureRequestIsNotInTerminalStatus()
+  for await (const cid of cidgenerator(request)) {
+
+  }
+  while(true) {
+    const cid = getNextCID()
+    const block = findCIDInMessageData(cid)
+    if(!block) {
+      if(blockNotInResponderBlockStore(block)) {
+        continue
+      }
+      // done with this request, abort
+    }
+    else {
+
+    }
+  }
+}
+```
+
+
+

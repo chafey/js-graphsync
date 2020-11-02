@@ -14,7 +14,11 @@ const createRequestMutator = (requestState) => {
 
         // resolve our promise for terminal statuses (success and error)
         if(isTerminalStatus(requestState.status)) {
-            requestState.promiseResolve()
+            if(requestState.status >= 30) {
+                requestState.promiseReject(new Error("Responder returned error status " + requestState.status))
+            } else {
+                requestState.promiseResolve()
+            }
         }
     }
 

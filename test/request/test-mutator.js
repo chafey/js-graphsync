@@ -59,6 +59,19 @@ describe('RequestMutator', () => {
         assert.strictEqual(state.status, 20)
     })
 
+    it('setStatus rejects for error terminal status', async () => {
+        // Arrange
+        const state = createRequestStateMock()
+        const requestMutator = createRequestMutator(state)
+
+        // Act
+        requestMutator.setStatus(30)
+
+        // Assert
+        assert.rejects(state.completed, {name: 'Error', message: 'Responder returned error status 30'})
+        assert.strictEqual(state.status, 30)
+    })
+
     it('updateBlockStatus throws on completed request', async () => {
         // Arrange
         const state = createRequestStateMock()
