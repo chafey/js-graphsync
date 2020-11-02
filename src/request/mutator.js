@@ -1,4 +1,5 @@
 const isTerminalStatus = require('../util/is-terminal-status')
+const GraphsyncStatusError = require('../graphsync-status-error')
 
 const createRequestMutator = (requestState) => {
     
@@ -15,7 +16,7 @@ const createRequestMutator = (requestState) => {
         // resolve our promise for terminal statuses (success and error)
         if(isTerminalStatus(requestState.status)) {
             if(requestState.status >= 30) {
-                requestState.promiseReject(new Error("Responder returned error status " + requestState.status))
+                requestState.promiseReject(new GraphsyncStatusError(requestState.status))
             } else {
                 requestState.promiseResolve()
             }

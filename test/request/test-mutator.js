@@ -68,7 +68,7 @@ describe('RequestMutator', () => {
         requestMutator.setStatus(30)
 
         // Assert
-        assert.rejects(state.completed, {name: 'Error', message: 'Responder returned error status 30'})
+        assert.rejects(state.completed, {name: 'GraphsyncStatusError', message: 'Request Rejected. NOT working on it.', status: 30})
         assert.strictEqual(state.status, 30)
     })
 
