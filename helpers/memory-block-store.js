@@ -9,7 +9,12 @@ const createMemoryBlockStore = () => {
         },
         get: async cid => {
             const cidAsString = cid.toString()
-            return blocks[cidAsString]
+            const block = blocks[cidAsString]
+            if(!block) {
+                return Promise.reject("block not found")
+            } else {
+                return block
+            }
         }
     }
 }

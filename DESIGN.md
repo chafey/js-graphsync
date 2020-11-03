@@ -54,13 +54,23 @@ Request Object
 --------------
 
 The Request object is returned to requesters after submitting a request to a responder.  The Request object provides methods to monitor and
-control the request process.  This includes checking on the status, canceling and pausing
+control the request process.  This includes checking on the status, canceling, and waiting for it to complete
 
 Response Object
 ---------------
 
 The Response object is provided to responders when processing the response for a received request from a requester.  The Response object provides
 functions to monitor status and control the request process.  This includes checking on status, canceling and pausing.
+
+NOTES
+----------------
+
+* go-graphsync will de-duplicate blocks accross pending requests to the same peer id (hannah)
+* the blocks need to be built before processing the requests
+  * we don't know a blocks cid until we build it (the prefix does not include the hash)
+* the built blocks need to be stored in a temporary cache
+  * possible that a given block does not match any request (bad responder)
+  * possible that a given request has been cancelled and we are still processing a response for that request
 
 
 TODO

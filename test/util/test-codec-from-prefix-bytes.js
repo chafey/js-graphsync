@@ -25,4 +25,10 @@ describe('codec-from-prefix-bytes', () => {
 
         assert.strictEqual(codec, 'raw')
     })
+
+    it('v1 with unknown codec throws', async () => {
+        const bytes = [1, 1]
+        assert.throws(() => codecFromPrefixBytes(bytes), {name: "Error", message: "Code 1 not found"})
+    })
+
 })
