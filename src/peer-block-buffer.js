@@ -37,14 +37,30 @@ const createPeerBlockBuffer = (blockStore) => {
         },
         get: cid => {
             const blockResolver = getBlockResolver(cid)
-            return blockResolver.promise
+            return blockResolver.promise.then((block) => {
+                delete blockResolvers[cid.toString()]
+                return block
+            })
         },
-        rejectUnresolved: async () => {
+        has: cid => {
+            const cidAsString = cid.toString()
+            return blockResolvers[cidAsString] != undefined
+        },
+        remove: cid => {
+            const cidAsString = cid.toString()
+            const blockResolver = blockResolvers[cidAsString]
+            if(blockResolver) {
+                blockResolver.promise.reject()
+                delete blockResolvers[cidAsString]
+            }
+        },
+        /*
+        rejectUnresolved: () => {
             for(const key in blockResolvers) {
                 const blockResolver = blockResolvers[key]
                 blockResolver.reject()
             }
-        }
+        }*/
     }
 }
 

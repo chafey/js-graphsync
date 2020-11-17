@@ -5,8 +5,14 @@ const createRequestBlockResolver = require('../src/request-block-resolver')
 
 describe('requestBlockResolver', async () => {
 
-    const block = await Block.encoder({ hello: 'world' }, 'dag-cbor')
-    const cid = await block.cid()
+    let block 
+    let cid
+
+    before(async() => {
+        block = await Block.encoder({ hello: 'world' }, 'dag-cbor')
+        cid = await block.cid()
+    })
+
 
     it('get for block in blockstore returns block', async () => {
         // Arrange

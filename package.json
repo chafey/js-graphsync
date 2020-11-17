@@ -4,7 +4,7 @@
   "description": "GraphSync Implementation",
   "main": "src/index.js",
   "scripts": {
-    "test": "mocha --recursive"
+    "test": "mocha --recursive --trace-warnings --unhandled-rejections=strict"
   },
   "repository": {
     "type": "git",
