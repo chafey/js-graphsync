@@ -12,14 +12,14 @@ const createDepthFirstTraversal = (root, blockStore, depthLimit=100) => {
     
         try {
             const block = await blockStore.get(root)
-    
-            cids.push(root)
-        
-            for (const [path, link] of block.reader().links()) {
-                const nodes = path.split('/').length
-                cids = cids.concat(await depthFirstTraversal(link, blockStore, depthLimit - nodes))
+
+            if(block) {
+                cids.push(root)
+                for (const [path, link] of block.reader().links()) {
+                    const nodes = path.split('/').length
+                    cids = cids.concat(await depthFirstTraversal(link, blockStore, depthLimit - nodes))
+                }
             }
-        
         } catch (err) {
             //console.log('exception:', err)
         }
