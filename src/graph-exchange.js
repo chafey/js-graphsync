@@ -12,6 +12,8 @@ const newGraphExchange = async (node, blockStore, logger, Block) => {
 
     const messageHandler = async (peerId, message) => {
         //console.log('peerId=', peerId)
+        // TODO: getOrCreatePeer
+        // TODO: create blocks and add to block buffer
         for(const response of message.responses) {
             // look up request with this peerId and request Id
             for(const request of requests) {
@@ -28,6 +30,7 @@ const newGraphExchange = async (node, blockStore, logger, Block) => {
     node.handle('/ipfs/graphsync/1.0.0', createStreamHandler(messageHandler))
 
     const request = async (peerId, rootCID, selector) => {
+        // getOrCreatePeer
         const requestId = nextRequestId++
         const {proxy, mutator} = await createRequest(node, requestId, peerId, rootCID, selector)
         requests.push({
