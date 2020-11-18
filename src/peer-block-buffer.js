@@ -11,7 +11,7 @@ const createPeerBlockBuffer = (blockStore) => {
         blockResolvers[cidAsString] = blockResolver
         blockResolver.promise.finally(() => {
             blockResolver.finalized = true
-        })
+        }).catch(() => {})
         return blockResolver
     }
 
@@ -54,13 +54,12 @@ const createPeerBlockBuffer = (blockStore) => {
                 delete blockResolvers[cidAsString]
             }
         },
-        /*
         rejectUnresolved: () => {
             for(const key in blockResolvers) {
                 const blockResolver = blockResolvers[key]
                 blockResolver.reject()
             }
-        }*/
+        }
     }
 }
 

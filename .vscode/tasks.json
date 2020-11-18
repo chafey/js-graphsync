@@ -2,15 +2,14 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "npm",
-            "script": "test",
+            "label": "npm: test",
+            "type": "shell",
+            "command": "npm test",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [],
-            "label": "npm: test",
-            "detail": "mocha test/**/test-*.js"
+            "problemMatcher": []
         }
     ]
 }

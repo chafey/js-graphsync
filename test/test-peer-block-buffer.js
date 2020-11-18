@@ -144,7 +144,7 @@ describe('peerBlockBuffer', () => {
         // Assert
         assert.strictEqual(hasBlock, false)
     })
-/*
+
     it('rejectUnresolved', async () => {
         // Arrange
         const peerBlockBuffer = createPeerBlockBuffer()
@@ -155,5 +155,5 @@ describe('peerBlockBuffer', () => {
 
         // Assert
         assert.rejects(getPromise)
-    })*/
+    })
 })
