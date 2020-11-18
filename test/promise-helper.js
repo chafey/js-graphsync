@@ -15,8 +15,14 @@ function isFinished(promise) {
     return Promise.race([delay(0, false), promise.then(() => true, () => true)]);
 }
 
+function isPending(promise) {
+    return Promise.race([delay(0, true), promise.then(() => false, () => false)]);
+}
+
+
 module.exports = {
     isResolved,
     isRejected,
-    isFinished
+    isFinished,
+    isPending
 }
