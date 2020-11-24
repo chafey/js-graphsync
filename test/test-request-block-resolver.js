@@ -29,7 +29,7 @@ describe('requestBlockResolver', async () => {
 
     it('get for block not in blockstore and not in peerBlockBuffer returns pending promise', async () => {
         // Arrange
-        const memoryBlockStore = {get: async (cid) => {}}
+        const memoryBlockStore = {get: async (cid) => {}, put: async(block) => {}}
         const peerBlockBuffer = {get: (cid) => {return Promise(() => {})}}
         const requestBlockResolver = createRequestBlockResolver(memoryBlockStore, peerBlockBuffer)
 
@@ -42,7 +42,7 @@ describe('requestBlockResolver', async () => {
 
     it('get for block not in blockstore and in peerBlockBuffer returns block', async () => {
         // Arrange
-        const memoryBlockStore = {get: async (cid) => {}}
+        const memoryBlockStore = {get: async (cid) => {}, put: async(block) => {}}
         const peerBlockBuffer = {get: (cid) => block}
         const requestBlockResolver = createRequestBlockResolver(memoryBlockStore, peerBlockBuffer)
 

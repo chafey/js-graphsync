@@ -1,43 +1,29 @@
 const createRequest = require('./request/create')
 const createStreamHandler = require('./stream-handler')
-const createResponseHandler = require('./response/handler')
+const createPeerMap = require('./peer-map')
+const createMessageHandler = require('./message-handler')
+const createRequestBlockResolver = require('./request-block-resolver')
 
 const newGraphExchange = async (node, blockStore, logger, Block) => {
 
-    let nextRequestId = 0
+    const peerMap = createPeerMap()
 
-    const requests = []
-
-    const responseHandler = createResponseHandler(Block, blockStore)
-
-    const messageHandler = async (peerId, message) => {
-        //console.log('peerId=', peerId)
-        // TODO: getOrCreatePeer
-        // TODO: create blocks and add to block buffer
-        for(const response of message.responses) {
-            // look up request with this peerId and request Id
-            for(const request of requests) {
-                const info = request.proxy.info()
-                //console.log(info)
-                if(info.peerId.toB58String() === peerId && 
-                   info.id == response.id) {
-                    await responseHandler(request.proxy, request.mutator, response, message.data)
-                }
-            }
-        }
-    }
-
-    node.handle('/ipfs/graphsync/1.0.0', createStreamHandler(messageHandler))
+    node.handle('/ipfs/graphsync/1.0.0', createStreamHandler(createMessageHandler(peerMap.getOrCreate)))
 
     const request = async (peerId, rootCID, selector) => {
-        // getOrCreatePeer
-        const requestId = nextRequestId++
-        const {proxy, mutator} = await createRequest(node, requestId, peerId, rootCID, selector)
-        requests.push({
+        const peerIdAsString = peerId.toB58String()
+        const peer = peerMap.getOrCreate(peerIdAsString)
+        const requestId = peer.nextRequestId++
+
+        const blockResolver = createRequestBlockResolver(blockStore, peer.blockBuffer)
+ 
+        const {proxy, mutator, validator} = await createRequest(node, requestId, peerId, blockResolver.get, rootCID, selector)
+        peer.requests[requestId] = {
             id: requestId,
             peerId,
             proxy,
-            mutator})
+            mutator,
+            validator}
         return proxy
     }
 

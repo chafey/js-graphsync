@@ -1,8 +1,10 @@
+const createRequestValidator = require('./validator')
 
 // creates an object that contains the internal state for a request
 
-const createRequestState = (id, peerId, rootCID, selector) => {
-    // This is ugly, is there a better way?
+const createRequestState = (id, peerId, blockGet, rootCID, selector) => {
+    const validator = createRequestValidator(rootCID, selector, blockGet)
+
     let promiseResolve, promiseReject
     const completed = new Promise((resolve, reject) => {
         promiseResolve = resolve
@@ -19,7 +21,8 @@ const createRequestState = (id, peerId, rootCID, selector) => {
         bytesReceived: 0,
         completed,
         promiseResolve,
-        promiseReject
+        promiseReject,
+        validator
     }
 }
 

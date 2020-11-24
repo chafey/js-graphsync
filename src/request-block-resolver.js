@@ -5,7 +5,9 @@ const createRequestBlockResolver = (blockStore, peerBlockBuffer) => {
             if(block) {
                 return block
             }
-            return await peerBlockBuffer.get(cid)
+            const newBlock = await peerBlockBuffer.get(cid)
+            await blockStore.put(newBlock)
+            return newBlock
         }
     }
 }

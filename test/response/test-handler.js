@@ -22,7 +22,9 @@ initLocal()
 const createRequestStateMock = () => {
     const id = 0
     const selector = selectors.depthLimitedGraph
-    return createRequestState(id, peerId, helloWorldBlockCID, selector)
+    const blockGet = async (cid) => {}
+
+    return createRequestState(id, peerId, blockGet, helloWorldBlockCID, selector)
 }
 
 describe('responseHandler', () => {

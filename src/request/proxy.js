@@ -12,8 +12,8 @@ const createRequestProxy = (requestState) => {
     }
 
     // returns a promise that resolves once the responder returns a terminal status
-    const complete = async () => {
-        return requestState.completed
+    const complete = () => {
+        return Promise.all([requestState.completed, requestState.validator])
     }
 
     // sends a cancel message to a responder  
