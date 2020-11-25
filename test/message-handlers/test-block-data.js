@@ -21,15 +21,15 @@ describe('blockDataMessageHandler', async () => {
         // Arrange
         const responseMetaData =[ 
             {
-                link: await simpleDAG[0].cid(),
+                link: simpleDAG[0].cid,
                 blockPresent: true
             },
             {
-                link: await simpleDAG[1].cid(),
+                link: simpleDAG[1].cid,
                 blockPresent: true
             },
             {
-                link: await simpleDAG[2].cid(), 
+                link: simpleDAG[2].cid, 
                 blockPresent: false // should be filtered out
             }]
         const responseMetaDataExtension = encode(responseMetaData)
@@ -41,12 +41,12 @@ describe('blockDataMessageHandler', async () => {
             }], 
             data: [
                 {
-                    prefix: prefixBytesFromCIDBytes((await simpleDAG[0].cid()).bytes),
-                    data: simpleDAG[0].encode()
+                    prefix: prefixBytesFromCIDBytes((simpleDAG[0].cid).bytes),
+                    data: simpleDAG[0].block.encode()
                 },
                 {
-                    prefix: prefixBytesFromCIDBytes((await simpleDAG[1].cid()).bytes),
-                    data: simpleDAG[1].encode()
+                    prefix: prefixBytesFromCIDBytes((simpleDAG[1].cid).bytes),
+                    data: simpleDAG[1].block.encode()
                 }
             ]
         }

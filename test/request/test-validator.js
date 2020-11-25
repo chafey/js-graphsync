@@ -17,25 +17,23 @@ describe('RequestValidator', () => {
     it('basics', async () => {
         // Arrange
         const blockStore = createMemoryBlockStore()
-        const blocks = await createSimpleDAG()
-        const cids = await Promise.all(blocks.map(async(block) => {
-            await blockStore.put(block)
-            return block.cid()
-        }))
-        const traversedCIDs = []
+        const simpleDAG = await createSimpleDAG()
+        await Promise.all(simpleDAG.map(async({block}) => {await blockStore.put(block)}))
+
+        const traversed = []
         const blockGet = async (cid) => {
             const block = await blockStore.get(cid)
-            traversedCIDs.push(cid)
+            traversed.push({cid, block})
             return block
         }
 
-        const requestValidator = createRequestValidator(cids[0], selectors.depthLimitedGraph, blockGet)
+        const requestValidator = createRequestValidator(simpleDAG[0].cid, selectors.depthLimitedGraph, blockGet)
 
         // Act
         await requestValidator
 
         // assert
-        assert.strictEqual(traversedCIDs.length, 3)
-        assert.deepStrictEqual(traversedCIDs, cids)
+        assert.strictEqual(traversed.length, 3)
+        assert.notStrictEqual(traversed, simpleDAG)
     })
 })

@@ -15,19 +15,35 @@ describe('response-metadata-cids', async () => {
         simpleDAG = await createSimpleDAG()
     })
 
+    it('missing extension returns no cids', async () => {
+        // Arrange
+        const message = {
+            responses: [{
+                extensions: {
+                }
+            }]
+        }
+
+        // Act
+        const cids = responseMetaDataCIDs(message)
+
+        // Assert
+        assert.strictEqual(cids.length, 0)
+    })
+
     it('basics', async () => {
         // Arrange
         const responseMetaData =[ 
             {
-                link: await simpleDAG[0].cid(),
+                link: simpleDAG[0].cid,
                 blockPresent: true
             },
             {
-                link: await simpleDAG[1].cid(),
+                link: simpleDAG[1].cid,
                 blockPresent: true
             },
             {
-                link: await simpleDAG[2].cid(), 
+                link: simpleDAG[2].cid, 
                 blockPresent: false // should be filtered out
             }]
         const responseMetaDataExtension = encode(responseMetaData)
@@ -44,7 +60,9 @@ describe('response-metadata-cids', async () => {
 
         // Assert
         assert.strictEqual(cids.length, 2)
-        assert.notDeepStrictEqual(cids[0], await simpleDAG[0].cid())
-        assert.notDeepStrictEqual(cids[1], await simpleDAG[1].cid())
+        assert.notDeepStrictEqual(cids[0], simpleDAG[0].cid)
+        assert.notDeepStrictEqual(cids[1], simpleDAG[1].cid)
     })
+
+ 
 })

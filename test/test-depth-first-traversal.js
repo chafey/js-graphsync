@@ -23,10 +23,7 @@ describe('depthFirstTraversal', () => {
     let simpleDAG = []
 
     before(async() => {
-        const simpleDAGBlocks = await createSimpleDAG()
-        for await(block of simpleDAGBlocks) {
-            simpleDAG.push({block, cid: await block.cid()})
-        }
+        simpleDAG = await createSimpleDAG()
     })
  
     it('succeeds', async () => {
@@ -55,7 +52,7 @@ describe('depthFirstTraversal', () => {
         assert.strictEqual(blockGetLogger.log.length, 0)
     })
 
-    it.skip('traversal does not exceed depth limit', async () => {
+    it('traversal does not exceed depth limit', async () => {
         // Arrange
         const blockStore = createMemoryBlockStore()
         await Promise.all(simpleDAG.map(async({block}) => await blockStore.put(block)))
