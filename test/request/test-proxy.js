@@ -11,8 +11,8 @@ const rootCID = new CID('bafyreidykglsfhoixmivffc5uwhcgshx4j465xwqntbmu43nb2dzqw
 const createRequestStateMock = () => {
     const id = 0
     const selector = selectors.depthLimitedGraph
-    const blockGet = async (cid) => {}
-    return createRequestState(id, peerId, blockGet, rootCID, selector)
+    const validator = Promise.resolve()
+    return createRequestState(id, peerId, validator, rootCID, selector)
 }
 
 describe('RequestProxy', () => {

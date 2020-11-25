@@ -5,8 +5,8 @@ const createNewMessage = require('./new-message')
 
 const sendMessage = require('../send-message')
 
-const createRequest = async (node, requestId, peerId, blockGet, rootCID, selector) => {
-    const state = createRequestState(requestId, peerId, blockGet, rootCID, selector)
+const createRequest = async (node, requestId, peerId, validator, rootCID, selector) => {
+    const state = createRequestState(requestId, peerId, validator, rootCID, selector)
     const proxy = createRequestProxy(state)
     const mutator = createRequestMutator(state)
     const message = createNewMessage(state)

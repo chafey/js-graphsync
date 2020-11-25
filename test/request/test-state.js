@@ -12,9 +12,10 @@ describe('RequestState', () => {
         // Arrange
         const id = 0
         const selector = selectors.depthLimitedGraph
-        const blockGet = async (cid) => {}
+        const validator = Promise.resolve()
+
         // Act
-        const state = createRequestState(id, peerId, blockGet, rootCID, selector)
+        const state = createRequestState(id, peerId, validator, rootCID, selector)
 
         // assert
         assert.strictEqual(state.id, id)
@@ -32,10 +33,10 @@ describe('RequestState', () => {
         // Arrange
         const id = 0
         const selector = selectors.depthLimitedGraph
-        const blockGet = async (cid) => {}
+        const validator = Promise.resolve()
 
         // Act
-        const state = createRequestState(id, peerId, blockGet, rootCID, selector)
+        const state = createRequestState(id, peerId, validator, rootCID, selector)
         state.promiseResolve()
 
         // assert
@@ -46,10 +47,10 @@ describe('RequestState', () => {
         // Arrange
         const id = 0
         const selector = selectors.depthLimitedGraph
-        const blockGet = async (cid) => {}
+        const validator = Promise.resolve()
 
         // Act
-        const state = createRequestState(id, peerId, blockGet, rootCID, selector)
+        const state = createRequestState(id, peerId, validator, rootCID, selector)
         state.promiseReject()
 
         // assert

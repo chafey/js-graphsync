@@ -1,9 +1,6 @@
-const createRequestValidator = require('./validator')
-
 // creates an object that contains the internal state for a request
 
-const createRequestState = (id, peerId, blockGet, rootCID, selector) => {
-    const validator = createRequestValidator(rootCID, selector, blockGet)
+const createRequestState = (id, peerId, validator, rootCID, selector) => {
 
     let promiseResolve, promiseReject
     const completed = new Promise((resolve, reject) => {
