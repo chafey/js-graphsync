@@ -1,86 +1,71 @@
 const assert = require('assert')
 const createMemoryBlockStore = require('../helpers/memory-block-store')
 const createSimpleDAG = require('./fixtures/create-simple-dag')
+const depthFirstTraversal = require('../src/depth-first-traversal')
 
+const createBlockGetLogger = (blockGet) => {
+    const log = []
 
-const createDepthFirstTraversal = (root, blockStore, depthLimit=100) => {
-    const depthFirstTraversal = async (root, blockStore, depthLimit) => {
-
-        if (depthLimit <= 0) return []
-    
-        let cids = []
-    
-        try {
-            const block = await blockStore.get(root)
-
-            if(block) {
-                cids.push(root)
-                for (const [path, link] of block.reader().links()) {
-                    const nodes = path.split('/').length
-                    cids = cids.concat(await depthFirstTraversal(link, blockStore, depthLimit - nodes))
-                }
-            }
-        } catch (err) {
-            //console.log('exception:', err)
-        }
-    
-        return cids
+    const get = async(cid) => {
+        const block = await blockGet(cid)
+        log.push({cid, block})
+        return block
     }
-    return async() => {
-        return depthFirstTraversal(root, blockStore, depthLimit)
+
+    return {
+        get,
+        log
     }
 }
 
 describe('depthFirstTraversal', () => {
+ 
+    let simpleDAG = []
+
+    before(async() => {
+        const simpleDAGBlocks = await createSimpleDAG()
+        for await(block of simpleDAGBlocks) {
+            simpleDAG.push({block, cid: await block.cid()})
+        }
+    })
+ 
     it('succeeds', async () => {
         // Arrange
         const blockStore = createMemoryBlockStore()
-        const blocks = await createSimpleDAG()
-        const cids = await Promise.all(blocks.map(async(block) => {
-            await blockStore.put(block)
-            return block.cid()
-        }))
-        const traverse = createDepthFirstTraversal(cids[0], blockStore)
+        await Promise.all(simpleDAG.map(async({block}) => await blockStore.put(block)))
+        const blockGetLogger = createBlockGetLogger(blockStore.get)
 
         // Act
-        const traversedCIDs = await traverse()
+        await depthFirstTraversal(simpleDAG[0].cid, 100, blockGetLogger.get)
 
         // Assert
-        assert.strictEqual(traversedCIDs.length, 3)
-        assert.deepStrictEqual(traversedCIDs, cids)
+        assert.strictEqual(blockGetLogger.log.length, 3)
+        assert.notDeepStrictEqual(blockGetLogger.logp, simpleDAG)
     })
 
-    it('terminates if blockstore get rejects', async () => {
+    it('terminates with rejected promise if blockstore get rejects', async () => {
         // Arrange
-        const blockStore = createMemoryBlockStore()
-        const blocks = await createSimpleDAG()
-        await blockStore.put(blocks[0])
-        const root  = await blocks[0].cid()
-        const traverse = createDepthFirstTraversal(root, blockStore)
+        const blockGetLogger = createBlockGetLogger(async (cid) => Promise.reject(new Error('test error')))
 
         // Act
-        const traversedCIDs = await traverse()
+        const promise = depthFirstTraversal(simpleDAG[0].cid, 100, blockGetLogger.get)
 
         // Assert
-        assert.strictEqual(traversedCIDs.length, 1)
-        assert.deepStrictEqual(traversedCIDs, [root])
+        assert.rejects(promise)
+        assert.strictEqual(blockGetLogger.log.length, 0)
     })
 
-    it('traversal does not exceed depth limit', async () => {
+    it.skip('traversal does not exceed depth limit', async () => {
         // Arrange
         const blockStore = createMemoryBlockStore()
-        const blocks = await createSimpleDAG()
-        const cids = await Promise.all(blocks.map(async(block) => {
-            await blockStore.put(block)
-            return block.cid()
-        }))
-        const traverse = createDepthFirstTraversal(cids[0], blockStore, 1)
+        await Promise.all(simpleDAG.map(async({block}) => await blockStore.put(block)))
+        const blockGetLogger = createBlockGetLogger(blockStore.get)
 
         // Act
-        const traversedCIDs = await traverse()
+        await depthFirstTraversal(simpleDAG[0].cid, 1, blockGetLogger.get)
 
         // Assert
-        assert.strictEqual(traversedCIDs.length, 1)
-        assert.deepStrictEqual(traversedCIDs, [cids[0]])
+        assert.strictEqual(blockGetLogger.log.length, 1)
+        assert.deepStrictEqual(blockGetLogger.log, [simpleDAG[0]])
     })
 })

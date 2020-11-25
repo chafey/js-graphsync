@@ -1,5 +1,10 @@
 const createBlockBuffer = require('./block-buffer')
 
+/**
+ * Returns an object which manages a map of peers.  All peer related graphsync information
+ * is stored in this object.
+ */
+
 const createPeerMap = () => {
     const peerMap = {}
     

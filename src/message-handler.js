@@ -1,8 +1,13 @@
 const createBlockDataMessageHandler = require('./message-handlers/block-data')
 const createResponseMessageHandler = require('./message-handlers/response')
-const Block = require('@ipld/block/defaults')
 
-const createMessageHandler = (getOrCreatePeer) => {
+/**
+ * Creates a message handler to use when handling graphsync messages
+ * @param {*} getOrCreatePeer 
+ * @param {*} Block 
+ */
+
+const createMessageHandler = (getOrCreatePeer, Block) => {
 
     const blockDataMessageHandler = createBlockDataMessageHandler((peerIdAsString) => {
         return getOrCreatePeer(peerIdAsString).blockBuffer

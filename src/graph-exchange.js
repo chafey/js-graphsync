@@ -8,7 +8,7 @@ const newGraphExchange = async (node, blockStore, logger, Block) => {
 
     const peerMap = createPeerMap()
 
-    node.handle('/ipfs/graphsync/1.0.0', createStreamHandler(createMessageHandler(peerMap.getOrCreate)))
+    node.handle('/ipfs/graphsync/1.0.0', createStreamHandler(createMessageHandler(peerMap.getOrCreate, Block)))
 
     const request = async (peerId, rootCID, selector) => {
         const peerIdAsString = peerId.toB58String()

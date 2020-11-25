@@ -3,6 +3,8 @@ const createHelloWorld = require('../fixtures/create-hello-world')
 const {isPending} = require('../promise-helper')
 const selectors = require('../../src/selectors')
 const createRequestValidator = require('../../src/request/validator')
+const createMemoryBlockStore = require('../../helpers/memory-block-store')
+const createSimpleDAG = require('../fixtures/create-simple-dag')
 
 describe('RequestValidator', () => {
 
@@ -14,19 +16,26 @@ describe('RequestValidator', () => {
 
     it('basics', async () => {
         // Arrange
-        let blockGetCallCount = 0
-        const blockGet = (cid) => {
-            blockGetCallCount++
-            return Promise.resolve(helloWorld.block)
+        const blockStore = createMemoryBlockStore()
+        const blocks = await createSimpleDAG()
+        const cids = await Promise.all(blocks.map(async(block) => {
+            await blockStore.put(block)
+            return block.cid()
+        }))
+        const traversedCIDs = []
+        const blockGet = async (cid) => {
+            const block = await blockStore.get(cid)
+            traversedCIDs.push(cid)
+            return block
         }
-        const requestValidator = createRequestValidator(helloWorld.cid, selectors.depthLimitedGraph, blockGet)
+
+        const requestValidator = createRequestValidator(cids[0], selectors.depthLimitedGraph, blockGet)
 
         // Act
         await requestValidator
 
         // assert
-        assert.strictEqual(blockGetCallCount,1)
+        assert.strictEqual(traversedCIDs.length, 3)
+        assert.deepStrictEqual(traversedCIDs, cids)
     })
-
-
 })
