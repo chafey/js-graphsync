@@ -9,18 +9,9 @@ is currently dead.
 
 # Building
 
-NOTE - this library depends on @ipld/js-dag-pb which is not yet published to NPM.  To work around this
-for now, you must clone the repository into a subdirectory and build it:
-
 ```sh
 npm install
-cd extern
-git clone git@github.com:ipld/js-dag-pb.git
-./build.sh
 ```
-
-run build.sh periodically to keep up to date with the latest changes in js-dag-pb
-
 # Running Examples
 
 ## Initializing go-ipfs
@@ -39,13 +30,6 @@ cd integration/go-ipfs
 ./start.sh
 ```
 
-## Running js-graphsync responder
-
-```sh
-cd examples/graphsync
-node responder.js
-```
-
 ## Running go-ipfs graphsync-get test app against go-ipfs
 
 ```sh
@@ -53,25 +37,11 @@ cd integration/go-ipfs
 ./get-from-go-ipfs.sh
 ```
 
-## Running go-ipfs graphsync-get test app against js-graphsync responder
-
-```sh
-cd integration/go-ipfs
-./get-from-js-graphsync-responder.sh
-```
-
 ## Running js-graphsync requester against go-ipfs
 
 ```sh
 cd examples/requester
 ./get-from-go-ipfs.sh
-```
-
-## Running js-graphsync requester against js-graphsync responder
-
-```sh
-cd examples/requester
-./get-from-js-graphsync-responder.sh
 ```
 
 # Links
